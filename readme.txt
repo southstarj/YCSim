@@ -13,3 +13,7 @@ matplotlib
 Detailed Documentation
 
 See ./documentation folder
+
+Final Updating date
+
+2014.8.8
