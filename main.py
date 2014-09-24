@@ -1,43 +1,56 @@
 import numpy as np
 import scipy as sp
 import matplotlib as plt
+import steamProp as prop
+
+def calcProp(steam, p):
+    crho = 0.062428*0.178107607;    # kg/m3 to lb/RB
+    rhow = steam.waterDensity(p)
+    rhog = steam.steamDensity(p)
+    drhow = steam.diffProp(steam.waterDensity, p)
+    drhog = steam.diffProp(steam.steamDensity, p)
+    print rhow, rhog, drhow, drhog
+    cU = 0.429923;      # kJ/kg to Btu/lb
+    Uw = steam.waterIntEnergy(p)
+    Ug = steam.steamIntEnergy(p)
+    drhoUw = rhow*steam.diffProp(steam.waterIntEnergy, p)+Uw*drhow
+    drhoUg = rhog*steam.diffProp(steam.steamIntEnergy, p)+Ug*drhog
+    print Uw, Ug, drhoUw, drhoUg
+    return [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg];
 
 pi = 600;      # inject pressure: psia
 p0 = 500;      # cell pressure: psia
-Sg0 = 1;       # init saturation
+Sg0 = 1.0;     # init saturation
 Hw = 262.09;   # inject water enthalpy: btu/lb
-J = 0.005;     # normalized injectivity
-
-crho = 0.062428*0.178107607;    # kg/m3 to lb/RB
-rhow = 810.96*crho; # water density: kg/m3
-rhog = 17.259*crho; # steam density: kg/m3
-drhow = (810.80-811.13)/2*crho; # drhow/dp
-drhog = (17.294-17.224)/2*crho; # drhog/dp
-
-cU = 0.429923;      # kJ/kg to Btu/lb
-Uw = 1041.37*cU;    # water internal energy: kJ/kg
-Ug = 2603.12*cU;    # steam internal energy: kJ/kg
-drhoUw = (810.80*1041.91-811.13*1040.83)/2*crho*cU;  # d(rhowUw)/dp
-drhoUg = (17.294*2603.11-17.224*2603.13)/2*crho*cU;  # d(rhogUg)/dp
-print drhoUw, drhoUg
+J = 0.00812;     # normalized injectivity: lb/cf.psi
+steam = prop.steamProp("saturated_steam.org");
 
 Sg = Sg0;
 p = p0;
+[rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
 
-for iter in range(5):
+for iter in range(30):
+    print 'Iteration #', iter
     Rw = (rhow*(1-Sg) + rhog*Sg) - J*(pi-p);
     Re = (rhow*(1-Sg)*Uw + rhog*Sg*Ug) - J*Hw*(pi-p);
     RHS = -np.array([Rw, Re]).transpose();
+#    print 'RHS = ', RHS
     a11 = rhog-rhow;
     a21 = rhog*Ug-rhow*Uw;
     a12 = (1-Sg)*drhow + Sg*drhog + J;
     a22 = (1-Sg)*drhoUw + Sg*drhoUg + J*Hw;
-    comp = a22 - a21*a12/a11;
+    comp = a22 - a21/a11*a12;
     Rebar = Re - a21/a11*Rw;
 #    print a11, a21, a12, a22
     A = np.array([[a11, a12], [a21, a22]]);
-    print A
+#    print A
     x = np.linalg.solve(A, RHS);
-    Sg = Sg0 + x[0];
-    p = p0 + x[1];
-    print x[0], x[1], comp, Sg, p, Rebar;
+    Sg = Sg + x[0];
+    p = p + x[1];
+    print '    dSg =', x[0]
+    print '    dp =', x[1]
+    print '    Compressibility =', comp
+    print '  Sg =', Sg
+    print '  p =', p
+    print '    modified Re =', Rebar
+    [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
