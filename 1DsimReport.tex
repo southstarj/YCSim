@@ -1,0 +1,119 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{courier}
+\usepackage{fullpage}
+\usepackage{float}
+\usepackage{indentfirst}
+
+\pagestyle{plain}
+
+\title{Formulation and simple cases for non-isothermal simulation}
+\author{Yifan Wang}
+\date{Oct 2014}
+
+\newcommand{\Sln}{\noindent\textbf{Solution}.}
+\newcommand{\Prf}{\textbf{Proof}. }
+
+\begin{document}
+
+\maketitle
+
+\section{The systems of equations}
+
+\subsection{Injection into a single cell}
+
+    Water injection into a steam saturated cell. The residual system
+    can be written as
+    
+    \begin{gather}
+        R^0_{w,1}=\frac{\Delta_t\Big\{V_p\big[
+                                         \rho_w(1-S_g) + \rho_gS_g
+                                       \big]
+                              \Big\}_1}
+                       {\Delta t} - W_Ikh\lambda_T(p^0-p) \\
+        R^0_{e,1}=\frac{\Delta_t\Big\{V_p\big[
+                                         \rho_w(1-S_g)U_w + \rho_gS_gU_g
+                                       \big]
+                              \Big\}_1}
+                       {\Delta t} - W_Ikh\lambda_TH_w(p^0-p)
+    \end{gather}
+    
+    where $R^0_{w,1}$ and $R^0_{e,1}$ are residuals for mass
+    and energy balance equations; $\Delta_tX=X^{n+1}-X^n$ is
+    the difference for function $X$ between timestep $n+1$ and
+    $n$.
+    
+    \vspace {10pt}
+    
+    \noindent\textbf{If we rearrage the system of equations in FIM scheme:}
+    \begin{gather}
+        R_w=\Big\{\big[\rho_w(1-S_g) + \rho_gS_g\big]^{n+1} - 
+                         \big[\rho_w(1-S_g) + \rho_gS_g\big]^{n}\Big\} -
+                      \frac{W_Ikh\lambda_T\Delta t}{V_p}(p^0 - p^{n+1}) \\
+        R_e=\Big\{\big[\rho_w(1-S_g)U_w + \rho_gS_gU_g\big]^{n+1} -
+                        \big[\rho_w(1-S_g)U_w + \rho_gS_gU_g\big]^{n}\Big\} -
+                      \frac{W_Ikh\lambda_T\Delta t}{V_p}H_w(p^0 - p^{n+1})
+    \end{gather}
+    
+    We can pack the coefficient of the pressure drop, defining as normalized
+    injectivity ($lb/(ft^3\cdot psi)$) of the well, and choose it as constant:
+    
+    \begin{equation}
+        J = \frac{W_Ikh\lambda_T\Delta t}{V_p}
+    \end{equation}
+    
+    We formulate the Newton problem for the system:
+    
+    \begin{equation}
+        \begin{bmatrix}
+          a_{11} & a_{12} \\ 
+          a_{21} & a_{22}
+        \end{bmatrix}
+        \begin{bmatrix}
+          \delta S_g \\
+          \delta p
+        \end{bmatrix} = -
+        \begin{bmatrix}
+          R_w \\
+          R_e
+        \end{bmatrix}
+    \end{equation}
+    \begin{gather}
+        a_{11} = \rho_g-\rho_w \\
+        a_{21} = \rho_gU_g-\rho_wU_w \\
+        a_{12} = S_w\frac{d\rho_w}{dp} + S_g\frac{d\rho_g}{dp} + J \\
+        a_{22} = S_w\frac{d(\rho_wU_w)}{dp} + S_g\frac{d(\rho_gU_g)}{dp} + JH_w
+    \end{gather}
+    
+    We can eliminate $a_{21}$ to generate pressure equation, which given by:
+    \begin{gather}
+        \hat{a}_{22}\delta p = -\hat{R}_e \\
+        \hat{a}_{22} = a_{22} - \frac{a_{21}}{a_{11}}a_{12} \\
+        \hat{R}_e = R_e - \frac{a_{21}}{a_{11}}R_w
+    \end{gather}
+    
+    And we define $\hat{a}_{22}$ to be the effective compressibility of the grid
+    cell, which will be shown in the following examples.
+    
+    \vspace{10pt}
+    \noindent\textbf{If we rearrage the system of equations in IMPES scheme:}
+    \begin{gather}
+        R_w=c_w(p^{n+1}-p^n) - J(p^0-p^{n+1}) \\
+        R_e=c_e(p^{n+1}-p^n) - JH_w(p^0-p^{n+1})
+    \end{gather}
+    
+    where,
+    \[\begin{split}
+    c_w &= \frac{d\big[\rho_w(1-S_g) + \rho_gS_g\big]}{dp}
+          = S_w\frac{d\rho_w}{dp} + S_g\frac{d\rho_g}{dp} \\
+    c_e &= \frac{d\big[\rho_w(1-S_g)U_w + \rho_gS_gU_g\big]}{dp}
+          = S_w\frac{d(\rho_wU_w)}{dp} + S_g\frac{d(\rho_gU_g)}{dp}
+    \end{split}\]
+
+    Therefore, the Newton formulation for IMPES will be exactly the same as
+    FIM scheme. However, the residual will be different according to the different
+    nonlinear formulation. The results will also be shown in the following examples.
+
+\end{document}
