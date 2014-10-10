@@ -115,5 +115,247 @@
     Therefore, the Newton formulation for IMPES will be exactly the same as
     FIM scheme. However, the residual will be different according to the different
     nonlinear formulation. The results will also be shown in the following examples.
+    
+    \newpage
+
+\centerline{\textbf{Table 1 }}
+\centerline{\textbf{Water Injection into Saturated Steam}}
+\vspace{20pt}
+
+\begin{tabular}{ l l }
+    Injection pressure: & 600 psi \\
+    Cell pressure: & 500 psi \\
+    Cell gas saturation: & 1.0 \\
+    Injection enthalpy: & 262.09 Btu/lb.(Saturated water at 60psi) \\
+    Normalized injectivity: & 0.005 $lb/ft^3\cdot psi$\\
+\end{tabular}
+\vspace{20pt}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ r r r r r r r }
+    Itn & $\delta S_g$ & $\delta p$ & $\hat{a}_{22}$ &
+    $S_g$ & $p$ & $\hat{R}_e$ \\
+    1 & -0.029314 & -132.44 & 0.6456 & 0.97069 & 367.56 & 85.505 \\
+    2 & 0.0055135 & 33.805 & 1.2072 & 0.9762 & 401.36 & -40.809 \\
+    3 & 0.0004397 & 2.8785 & 1.0538 & 0.97664 & 404.24 & -3.0335 \\
+    4 & 0.0000023831 & 0.014275 & 1.0441 & 0.97664 & 404.25 & -0.014905 \\
+    5 & 6.1324E-11 & 3.5971E-7 & 1.0441 & 0.97664 & 404.25 & -3.7557E-7 \\
+    6 & 7.8839E-18 & -2.6704E-13 & 1.0441 & 0.97664 & 404.25 & 2.7882E-13 \\
+    7 & -1.9639E-17 & -1.9522E-13 & 1.0441 & 0.97664 & 404.25 & 2.0383E-13 \\
+    8 & -1.765E-17 & -6.6367E-14 & 1.0441 & 0.97664 & 404.25 & 6.9292E-14 \\
+    9 & -8.3544E-18 & 1.1693E-13 & 1.0441 & 0.97664 & 404.25 & -1.2208E-13 \\
+    10 & 1.6131E-17 & 8.7627E-14 & 1.0441 & 0.97664 & 404.25 & -9.149E-14 \\
+\end{tabular}
+\end{table}
+
+Very small injectivity, the Newton iteration performs normally.
+
+\newpage
+\centerline{\textbf{Table 2 }}
+\centerline{\textbf{Water Injection into Saturated Steam}}
+\vspace{20pt}
+
+\begin{tabular}{ l l }
+    Injection pressure: & 600 psi \\
+    Cell pressure: & 500 psi \\
+    Cell gas saturation: & 1.0 \\
+    Injection enthalpy: & 262.09 Btu/lb.(Saturated water at 60psi) \\
+    Normalized injectivity: & 0.007 $lb/ft^3\cdot psi$\\
+\end{tabular}
+\vspace{20pt}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ r r r r r r r }
+    Itn & $\delta S_g$ & $\delta p$ & $\hat{a}_{22}$ &
+    $S_g$ & $p$ & $\hat{R}_e$ \\
+    1 & -0.087275 & -394.32 & 0.30358 & 0.91273 & 105.68 & 119.71 \\
+    2 & 0.024544 & 116.06 & 4.8607 & 0.93727 & 221.75 & -564.15 \\
+    3 & 0.01586 & 92.099 & 2.2119 & 0.95313 & 313.85 & -203.72 \\
+    4 & 0.0053628 & 28.63 & 1.416 & 0.95849 & 342.47 & -40.541 \\
+    5 & 0.00050024 & 2.7332 & 1.1998 & 0.95899 & 345.21 & -3.2794 \\
+    6 & 0.0000043124 & 0.023748 & 1.18 & 0.959 & 345.23 & -0.028023 \\
+    7 & 3.2477E-10 & 0.0000017863 & 1.1799 & 0.959 & 345.23 & -0.0000021076 \\
+    8 & 2.6319E-16 & 1.3036E-12 & 1.1799 & 0.959 & 345.23 & -1.5381E-12 \\
+    9 & 7.1886E-18 & -2.1644E-13 & 1.1799 & 0.959 & 345.23 & 2.5537E-13 \\
+    10 & -1.6674E-17 & -7.4712E-14 & 1.1799 & 0.959 & 345.23 & 8.815E-14 \\
+\end{tabular}
+\end{table}
+
+Small injectivity, the Newton iteration performs normally.
+
+\newpage
+\centerline{\textbf{Table 3 }}
+\centerline{\textbf{Water Injection into Saturated Steam}}
+\vspace{20pt}
+
+\begin{tabular}{ l l }
+    Injection pressure: & 600 psi \\
+    Cell pressure: & 500 psi \\
+    Cell gas saturation: & 1.0 \\
+    Injection enthalpy: & 262.09 Btu/lb.(Saturated water at 60psi) \\
+    Normalized injectivity: & 0.0073 $lb/ft^3\cdot psi$\\
+\end{tabular}
+\vspace{20pt}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ r r r r r r r }
+    Itn & $\delta S_g$ & $\delta p$ & $\hat{a}_{22}$ &
+    $S_g$ & $p$ & $\hat{R}_e$ \\
+    1 & -0.10952 & -494.84 & 0.25228 & 0.89048 & 5.1604 & 124.84 \\
+    2 & 0.017679 & 23.553 & 68.707 & 0.90815 & 28.714 & -1618.3 \\
+    3 & 0.009782 & 85.717 & 12.977 & 0.91794 & 114.43 & -1112.4 \\
+    4 & 0.019238 & 116.97 & 4.4451 & 0.93717 & 231.4 & -519.96 \\
+    5 & 0.014247 & 81.025 & 2.126 & 0.95142 & 312.43 & -172.26 \\
+    6 & 0.0042984 & 22.46 & 1.4113 & 0.95572 & 334.89 & -31.699 \\
+    7 & 0.00031667 & 1.6794 & 1.2358 & 0.95604 & 336.57 & -2.0754 \\
+    8 & 0.0000017016 & 0.009093 & 1.223 & 0.95604 & 336.58 & -0.011121 \\
+    9 & 4.9475E-11 & 2.6106E-7 & 1.223 & 0.95604 & 336.58 & -3.1927E-7 \\
+    10 & -5.2116E-17 & -1.297E-13 & 1.223 & 0.95604 & 336.58 & 1.5861E-13 \\
+\end{tabular}
+\end{table}
+
+    Critical point for pressure above zero, still perform normally. If we try to slightly
+    increase the injectivity, the pressure after first iteration will turn to negative.
+    Since we don't have thermodynamic properties for negative pressure steam,
+    although Newton iteration will converge, the results become garbage.
+
+\newpage
+\centerline{\textbf{Table 4 }}
+\centerline{\textbf{Water Injection into Saturated Steam}}
+\vspace{20pt}
+
+\begin{tabular}{ l l }
+    Injection pressure: & 600 psi \\
+    Cell pressure: & 500 psi \\
+    Cell gas saturation: & 1.0 \\
+    Injection enthalpy: & 262.09 Btu/lb.(Saturated water at 60psi) \\
+    Normalized injectivity: & 0.00738 $lb/ft^3\cdot psi$\\
+\end{tabular}
+\vspace{20pt}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ r r r r r r r }
+    Itn & $\delta S_g$ & $\delta p$ & $\hat{a}_{22}$ &
+    $S_g$ & $p$ & $\hat{R}_e$ \\
+    1 & -0.11707 & -528.95 & 0.2386 & 0.88293 & -28.947 & 126.21 \\
+    2 & -0.010507 & 1.4563 & 1.77E+4 & 0.87242 & -27.49 & -25777 \\
+    3 & 0.023944 & 2.1951 & 10565 & 0.89636 & -25.295 & -23191 \\
+    4 & 0.0053757 & 4.0219 & 4888.1 & 0.90174 & -21.273 & -1.966E+4 \\
+    5 & 0.0019162 & 6.0521 & 2354.5 & 0.90366 & -15.221 & -14249 \\
+    6 & 0.00067778 & 7.6673 & 1091.2 & 0.90433 & -7.554 & -8366.2 \\
+    7 & 0.0003139 & 8.9614 & 448.06 & 0.90465 & 1.4074 & -4015.2 \\
+    8 & 0.0007591 & 15.98 & 120.84 & 0.90541 & 17.387 & -1931 \\
+    9 & 0.0074873 & 66.512 & 19.246 & 0.91289 & 83.899 & -1280.1 \\
+    10 & 0.018403 & 114.36 & 5.8234 & 0.9313 & 198.26 & -665.99 \\
+    11 & 0.016792 & 99.589 & 2.4495 & 0.94809 & 297.85 & -243.95 \\
+    12 & 0.006447 & 32.771 & 1.5263 & 0.95454 & 330.62 & -50.02 \\
+    13 & 0.00069563 & 3.634 & 1.2636 & 0.95523 & 334.26 & -4.5917 \\
+    14 & 0.0000081267 & 0.043047 & 1.2354 & 0.95524 & 334.3 & -0.053181 \\
+    15 & 1.1205E-9 & 0.0000059234 & 1.2351 & 0.95524 & 334.3 & -0.0000073159 \\
+    16 & -1.6466E-16 & -3.7145E-12 & 1.2351 & 0.95524 & 334.3 & 4.5878E-12 \\
+    17 & -7.225E-17 & -7.1162E-14 & 1.2351 & 0.95524 & 334.3 & 8.789E-14 \\
+    18 & 5.3861E-17 & 6.398E-14 & 1.2351 & 0.95524 & 334.3 & -7.902E-14 \\
+    19 & 6.5404E-18 & -2.1217E-13 & 1.2351 & 0.95524 & 334.3 & 2.6204E-13 \\
+    20 & 3.1547E-17 & 1.841E-13 & 1.2351 & 0.95524 & 334.3 & -2.2737E-13 \\
+\end{tabular}
+\end{table}
+
+    Additionally, if we use spline to extrapole pressure data below zero, the
+    Newton iteration is able to ''recover''(saturation back to range $[0,1]$) after
+    the first iteration. However, the value should also seem to be garbage even
+    the result seems to be ''physical meaningful'', since we used thermodynamic
+    properties for nonexisting ''negative pressure'' steam.
+
+    Above all, from Case 1, 2, 3, (and 4), we can observe that gas saturation after
+    one time step is decreasing as we increase the injectivity of cold water, which
+    is physical meaningful. Also, we can see how the energy residual significantly
+    affected by the injectivity because of the large value of water enthalpy $H_w$.
+
+\newpage
+\centerline{\textbf{Table 5 }}
+\centerline{\textbf{Water Injection into Saturated Steam}}
+\vspace{20pt}
+
+\begin{tabular}{ l l }
+    Injection pressure: & 600 psi \\
+    Cell pressure: & 500 psi \\
+    Cell gas saturation: & 1.0 \\
+    Injection enthalpy: & 262.09 Btu/lb.(Saturated water at 60psi) \\
+    Normalized injectivity: & 0.00875 $lb/ft^3\cdot psi$\\
+\end{tabular}
+\vspace{20pt}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ r r r r r r r }
+    Itn & $\delta S_g$ & $\delta p$ & $\hat{a}_{22}$ &
+    $S_g$ & $p$ & $\hat{R}_e$ \\
+    1 & -7.6773 & -34687 & \textbf{0.0043138} & -6.6773 & -34187 & \textbf{149.63} \\
+    2 & 7.6741 & 3.491E+4 & 2.3835E+10 & 0.99672 & 723.11 & -8.3207E+14 \\
+    3 & 0.09801 & 260.58 & -0.3581 & 1.0947 & 983.7 & 93.314 \\
+    4 & -0.028593 & -127.5 & -1.2153 & 1.0661 & 856.19 & -154.96 \\
+    5 & -0.0026489 & -13.718 & -0.9611 & 1.0635 & 842.48 & -13.184 \\
+    6 & -0.000031653 & -0.15979 & -0.93364 & 1.0635 & 842.32 & -0.14918 \\
+    7 & -4.5799E-9 & -0.00002293 & -0.93331 & 1.0635 & 842.32 & -0.000021401 \\
+    8 & -1.8611E-15 & -6.5288E-12 & -0.93331 & 1.0635 & 842.32 & -6.0933E-12 \\
+    9 & -2.9527E-16 & -9.1754E-13 & -0.93331 & 1.0635 & 842.32 & -8.5635E-13 \\
+    10 & 6.9752E-17 & 5.3338E-13 & -0.93331 & 1.0635 & 842.32 & 4.978E-13 \\
+\end{tabular}
+\end{table}
+
+    As we increase the injectivity more, the saturation converge at values greater
+    than 1. The extrapolation cannot ''recover'' such large value of negative pressure.
+    However, we still haven't meet the point where the compressibility turn into negative.
+
+\newpage
+\centerline{\textbf{Table 6 }}
+\centerline{\textbf{Water Injection into Saturated Steam}}
+\vspace{20pt}
+
+\begin{tabular}{ l l }
+    Injection pressure: & 600 psi \\
+    Cell pressure: & 500 psi \\
+    Cell gas saturation: & 1.0 \\
+    Injection enthalpy: & 262.09 Btu/lb.(Saturated water at 60psi) \\
+    Normalized injectivity: & 0.00881 $lb/ft^3\cdot psi$\\
+\end{tabular}
+\vspace{20pt}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ r r r r r r r }
+    Itn & $\delta S_g$ & $\delta p$ & $\hat{a}_{22}$ &
+    $S_g$ & $p$ & $\hat{R}_e$ \\
+    1 & 5.6074 & 25335 & \textbf{-0.0059468} & 6.6074 & 25835 & \textbf{150.66} \\
+    2 & 3.0196 & -25112 & -35241 & 9.627 & 722.56 & -8.8499E+8 \\
+    3 & -8.5901 & 1.4806 & -62.212 & 1.0369 & 724.04 & 92.111 \\
+    4 & 0.030953 & 138.22 & -0.65961 & 1.0679 & 862.26 & 91.168 \\
+    5 & -0.0049072 & -22.931 & -0.99035 & 1.063 & 839.33 & -22.71 \\
+    6 & -0.00010283 & -0.50976 & -0.94145 & 1.0629 & 838.82 & -0.47992 \\
+    7 & -4.7859E-8 & -0.00023835 & -0.94039 & 1.0629 & 838.82 & -0.00022415 \\
+    8 & -3.2125E-14 & -1.2289E-10 & -0.94039 & 1.0629 & 838.82 & -1.1557E-10 \\
+    9 & 1.6304E-16 & 3.2942E-13 & -0.94039 & 1.0629 & 838.82 & 3.0978E-13 \\
+    10 & -1.317E-16 & -2.0852E-13 & -0.94039 & 1.0629 & 838.82 & -1.9609E-13 \\
+\end{tabular}
+\end{table}
+
+    Here we meet the point where compressibility turns into negative. There is
+    no way to ''recover'' results from negative compressibility. According
+    to the pressure equation $\hat{a}_{22}\delta p = -\hat{R}_e$, for the similar
+    residual (compare to Case 3), because of the compressibility turning to negative,
+    we get an extremely large \textbf{positive} pressure after the first iteration,
+    which even has been far beyond the critical point for water. The residual is
+    depending on how we extrapolate thermodynamic properties(which actually
+    doesn't exist), so as the results. Therefore, all the values calculated after
+    iteration 1 become garbage.
+
+\newpage
+
+    Here we take a look at the sensitivity analysis for compressibility and residual
+    after the first iteration in terms of injectivity.
 
 \end{document}
