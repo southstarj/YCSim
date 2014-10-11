@@ -2,6 +2,7 @@ import numpy as np
 import scipy as sp
 import matplotlib as plt
 import steamProp as prop
+from decimal import *
 
 def calcProp(steam, p):
     crho = 0.062428*0.178107607;    # kg/m3 to lb/RB
@@ -21,28 +22,32 @@ def calcProp(steam, p):
 pi = 600;      # inject pressure: psia
 p0 = 500;      # cell pressure: psia
 Sg0 = 1.0;     # init saturation
-Hw = 471.6;   # inject water enthalpy: btu/lb
-J = 10.0;     # normalized injectivity: lb/cf.psi
+#Hw = 471.6;   # inject water enthalpy: btu/lb
+#J = 10.0;     # normalized injectivity: lb/cf.psi
 steam = prop.steamProp("saturated_steam.org");
+getcontext().prec() = 5;
 
 Hw = 262.09;
-Jvalues = [0.005, 0.007, 0.00875, 0.00880];
+Jvalues = [0.005, 0.007, 0.0073, 0.00738, 0.00875, 0.00881];
 
 for J in Jvalues:
-    print '\centerline{Table',Jvalues.index(J),'}'
-    print '\centerline{Water Injection into Saturated Steam}'
-    print '\vspace{20pt}'
+    print '\\centerline{Table',Jvalues.index(J),'}'
+    print '\\centerline{Water Injection into Saturated Steam}'
+    print '\\vspace{20pt}\n'
 
-    print '\begin{tabular}{ l l }'
-    print 'Injection pressure: &', pi, 'psi \\'
-    print 'Cell pressure: &', p0, 'psi \\'
-    print 'Cell gas saturation: &', Sg0, '\\'
-    print 'Injection enthalpy: &', Hw, 'Btu/lb.(Saturated water at 60psi) \\'
-    print '\end{tabular}'
-    print '\vspace{20pt}'
+    print '\\begin{tabular}{ l l }'
+    print '    Injection pressure: &', pi, 'psi \\\\'
+    print '    Cell pressure: &', p0, 'psi \\\\'
+    print '    Cell gas saturation: &', Sg0, '\\\\'
+    print '    Injection enthalpy: &', Hw,\
+          'Btu/lb.(Saturated water at 60psi) \\\\'
+    print '\\end{tabular}'
+    print '\\vspace{20pt}\n'
 
-    print '\begin{tabular}{ c c c c c c c }'
-    print 'Itn# & $\delta S_g$ & $\delta p$ & $\hat{a}_{22}$ & $S_g$ & $p$ & $\hat{R}_e$'
+    print '\\begin{table}[H]\n\\centering'
+    print '\\begin{tabular}{ r r r r r r r }'
+    print 'Itn & $\\delta S_g$ & $\\delta p$ & $\\hat{a}_{22}$'
+    print '& $S_g$ & $p$ & $\\hat{R}_e$'
 
     Sg = Sg0;
     p = p0;
@@ -76,5 +81,14 @@ for J in Jvalues:
         print '  p =', p
         print '    modified Re =', Rebar
         """
-        print iter, '\t', x[0],'\t', x[1],'\t', comp,'\t', Sg,'\t', p,'\t', Rebar
+        print iter, '&',\
+              Decimal(x[0]).normalize(),'&',\
+              Decimal(x[1]).normalize(),'&',\
+              Decimal(comp).normalize(),'&',\
+              Decimal(Sg).normalize(),'&',\
+              Decimal(p).normalize(),'&',\
+              Decimal(Rebar).normalize(),'\\\\'
         [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
+
+    print '\\end{tabular}\n\\end{table}'
+    print '\\newpage'
