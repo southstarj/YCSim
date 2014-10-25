@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 class steamProp:
     def __init__(self, filename):
         self.data = np.zeros((40, 8));
+        # read steam propertie table from file
         with open(filename, 'r') as f:
             line = f.readline();
             f.readline();
@@ -21,13 +22,18 @@ class steamProp:
                     break;
                 self.data[i] = values;
                 i = i + 1;
+        # set up spline interpolation object
         self.tck = [];
         for i in range(8):
-            self.tck.append(interpolate.splrep(self.data[:,0], self.data[:,i], s=0));
+            self.tck.append(interpolate.splrep(self.data[:,0],\
+                                               self.data[:,i], s=0));
 
     def extractData(self, p, colNum):
+    # Get data from interpolation
         return interpolate.splev(p, self.tck[colNum], der=0);
+
     def diffProp(self, propFunc, p):
+    # Numerical property function differentiation
         dp = 1;
         rightDp = propFunc(p + dp);
         leftDp = propFunc(p - dp);

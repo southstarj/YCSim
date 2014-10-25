@@ -12,23 +12,47 @@ def calcProp(steam, p):
     drhog = steam.diffProp(steam.steamDensity, p)
 #    print rhow, rhog, drhow, drhog
     cU = 0.429923;      # kJ/kg to Btu/lb
+    Hw = steam.waterEnthalpy(p)
+    Hg = steam.steamEnthalpy(p)
     Uw = steam.waterIntEnergy(p)
     Ug = steam.steamIntEnergy(p)
     drhoUw = rhow*steam.diffProp(steam.waterIntEnergy, p)+Uw*drhow
     drhoUg = rhog*steam.diffProp(steam.steamIntEnergy, p)+Ug*drhog
 #    print Uw, Ug, drhoUw, drhoUg
-    return [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg];
+    return [rhow, rhog, drhow, drhog,\
+            Hw, Hg, Uw, Ug, drhoUw, drhoUg];
 
-pi = 600;      # inject pressure: psia
-p0 = 500;      # cell pressure: psia
-Sg0 = 1.0;     # init saturation
-Hw = 471.6;   # inject water enthalpy: btu/lb
-J = 10.0;     # normalized injectivity: lb/cf.psi
+def Transmissibility(Sg):
+    Tw = 1990; Tg = 10;
+    return Tw*(1-Sg) + Tg*Sg;
+
+class Reservoir:
+    def __init__(self, n, Vp):
+        self._size = n;
+        self._poreVol = Vp;
+
+    def Size(self):
+        return self._size;
+    def checkBound(self, i):
+        return (i >= 0) and (i < self._size);
+    def poreVolumeList(self):
+        return _poreVol;
+    def poreVolume(self, i):
+        if (self.checkBound(i)):
+            return self._poreVol[i];
+        else:
+            print 'Coordinate out of bound'
+            return -1;
+n = 2;
+Vp = [1000, 1000];
+reservoir = Reservoir(n, Vp);
+p0 = [600, 500];
+Sg0 = [0.0, 1.0];
+dt = 1;
+
 steam = prop.steamProp("saturated_steam.org");
 getcontext().prec = 5;
 
-Hw = 262.09;
-Jvalues = [0.00001, 0.005, 0.007, 0.0073, 0.00738, 0.00875, 0.00881];
 """
 dSg=[]
 dp=[]
@@ -43,8 +67,8 @@ print '\\begin{tabular}{ r r r r r r r r r }'
 print '$J$ & $\\delta S_g$ & $\\delta p$ & $\\hat{a}_{22}$'
 print '& $S_g$ & $p$ & $\\hat{R}_e$ \\\\'
 """
-for J in Jvalues:
-    
+for J in range(1):
+    """
     print '\\centerline{Table',Jvalues.index(J),'}'
     print '\\centerline{Water Injection into Saturated Steam}'
     print '\\vspace{20pt}\n'
@@ -63,71 +87,44 @@ for J in Jvalues:
     print '\\begin{tabular}{ r r r r r r r }'
     print 'Itn & $\\delta S_g$ & $\\delta p$ & $\\hat{a}_{22}$'
     print '& $S_g$ & $p$ & $\\hat{R}_e$ \\\\'
-    
-
-    Sg = Sg0;
-    p = p0;
-    [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
-    #Rw0 = rhow*(1-Sg) + rhog*Sg;
-    #Re0 = (rhow*(1-Sg)*Uw + rhog*Sg*Ug);
-    for iter in range(10):
-        #Rw = (rhow*(1-Sg) + rhog*Sg) - Rw0 - J*(pi-p);
-        #Re = (rhow*(1-Sg)*Uw + rhog*Sg*Ug) - Re0 - J*Hw*(pi-p);
-        cw = (1-Sg)*drhow + Sg*drhog
-        ce = (1-Sg)*drhoUw + Sg*drhoUg
-        Rw = cw*(p-p0)-J*(pi-p)
-        Re = ce*(p-p0)-J*Hw*(pi-p)
-        RHS = -np.array([Rw, Re]).transpose();
-        a11 = rhog-rhow;
-        a21 = rhog*Ug-rhow*Uw;
-        a12 = cw + J #(1-Sg)*drhow + Sg*drhog + J;
-        a22 = ce + J*Hw #(1-Sg)*drhoUw + Sg*drhoUg + J*Hw;
-        comp = a22 - a21/a11*a12;
-        Rebar = Re - a21/a11*Rw;
-        A = np.array([[a11, a12], [a21, a22]]);
-        #    print A
-        x = np.zeros(2) #np.linalg.solve(A, RHS);
-        x[1] = -Rebar/comp;
-        x[0] = (-Rw-a12*x[1])/a11;
-        Sg = Sg + x[0];
-        p = p + x[1];
-        #[rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
+    """
+    # Prototype for Newton iteration
+    Sg = np.array(Sg0);
+    p = np.array(p0);
+    for iter in range(3):
+        A = generateJacobian(reservoir, steam, dt, p, Sg);
+        RHS = generateRHS(reservoir, steam, dt, p, Sg);
+        x, comp, Rbar = linearSolver(reservoir, steam, dt, A, RHS);
+        dp = x[0:1];
+        dSg = x[2:3];
+        p = p + dp;
+        Sg = Sg + dSg;
         print iter, '&',\
-              Decimal(x[0]).normalize(),'&',\
-              Decimal(x[1]).normalize(),'&',\
+              Decimal(dp).normalize(),'&',\
+              Decimal(dSg).normalize(),'&',\
               Decimal(comp).normalize(),'&',\
               Decimal(Sg).normalize(),'&',\
               Decimal(p).normalize(),'&',\
               Decimal(Rebar).normalize(),'\\\\'
-    """
-    for iter in range(20):
-        Rw = (rhow*(1-Sg) + rhog*Sg) - Rw0 - J*(pi-p);
-        Re = (rhow*(1-Sg)*Uw + rhog*Sg*Ug) - Re0 - J*Hw*(pi-p);
-        RHS = -np.array([Rw, Re]).transpose();
-        a11 = rhog-rhow;
-        a21 = rhog*Ug-rhow*Uw;
-        a12 = (1-Sg)*drhow + Sg*drhog + J;
-        a22 = (1-Sg)*drhoUw + Sg*drhoUg + J*Hw;
-        comp = a22 - a21/a11*a12;
-        Rebar = Re - a21/a11*Rw;
-        A = np.array([[a11, a12], [a21, a22]]);
-        #    print A
-        x = np.linalg.solve(A, RHS);
-        Sg = Sg + x[0];
-        p = p + x[1];
-        [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
-    print '    ', Decimal(Sg).normalize(), '&',\
-          Decimal(p).normalize(), '\\\\'
-    """
 
+def generateJacobian(reservoir, steam, dt, p, Sg):
+    Vp = reservoir.poreVolumeList();
+    rhow = [steam.waterDensity(p[0]), steam.waterDensity(p[1])];
+    rhog = [steam.steamDensity(p[0]), steam.steamDensity(p[1])];
+    Uw = [steam.waterIntEnergy(p[0]), steam.waterIntEnergy(p[1])];
+    Ug = [steam.steamIntEnergy(p[0]), steam.steamIntEnergy(p[1])];
+    Hw = [steam.waterEnthalpy(p[0]), steam.waterEnthalpy(p[1])];
+    Hg = [steam.steamEnthalpy(p[0]), steam.steamEnthalpy(p[1])];
+    T = 1990*(1-Sg[0])+10*Sg[0];
+    TH = 1990*(1-Sg[0])*Hw[0]+10*Sg[0]*Hg[0];
+
+    a11 = np.diag([Vp[0]/dt * (rhog[0] - rhow[0]),\
+                   Vp[1]/dt * (rhog[1] - rhow[1])]);
+    a21 = np.diag([Vp[0]/dt * (rhog[0]*Ug[0] - rhow[0]*Uw[0]),\
+                   Vp[1]/dt * (rhog[1]*Ug[1] - rhow[1]*Uw[1])]);
+
+
+"""
     print '\\end{tabular}\n\\end{table}'
     print '\\newpage'
-
-# visualization
-#plt.plot(Jvalues, dSg)
-#plt.plot(Jvalues, dp)
-#plt.plot(Jvalues, compressibility)
-#plt.plot(Jvalues, steamSaturation)
-#plt.plot(Jvalues, pressure)
-#plt.plot(Jvalues, residual)
-#plt.show()
+"""
