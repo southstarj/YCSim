@@ -30,14 +30,28 @@ class steamProp:
 
     def extractData(self, p, colNum):
     # Get data from interpolation
-        return interpolate.splev(p, self.tck[colNum], der=0);
+        if type(p) is list:
+            _value = [];
+            for i in range(len(p)):
+                _value[i] = interpolate.splev(p, self.tck[colNum], der=0);
+        else:
+            _value = interpolate.splev(p, self.tck[colNum], der=0);
+        return _value;
 
     def diffProp(self, propFunc, p):
     # Numerical property function differentiation
         dp = 1;
-        rightDp = propFunc(p + dp);
-        leftDp = propFunc(p - dp);
-        return (rightDp - leftDp) / (2 * dp);
+        if type(p) is list:
+            _value = [];
+            for i in range(len(p)):
+                rightDp = propFunc(p[i] + dp);
+                leftDp = propFunc(p[i] - dp);
+                _value[i] = (rightDp - leftDp) / (2 * dp);
+        else:
+            rightDp = propFunc(p + dp);
+            leftDp = propFunc(p - dp);
+            _value = (rightDp - leftDp) / (2 * dp);
+        return _value;
 
     def boilingPoint(self, p):
         return self.extractData(p, 1);
