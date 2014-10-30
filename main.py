@@ -100,6 +100,32 @@ def generateJacobian(reservoir, steam, dt, p, Sg):
                    np.hstack([a21,a22])]);
     return A;
 
+def linearSolver(reservoir, steam, dt, A, RHS):
+    a11 = A[0:2, 0:2]; a12 = A[0:2, 2:4];
+    a21 = A[2:4, 0:2]; a22 = A[2:4, 2:4];
+    Rw = -RHS[0:2]; Re = -RHS[2:4];
+    _factor = np.dot(a21, np.linalg.inv(a11));
+    comp = a22 - np.dot(_factor, a12);
+    Rebar = Re - np.dot(_factor, Rw);
+    dp = np.linalg.solve(comp, -Rebar);
+    dSg = np.linalg.solve(a11, -Rw - np.dot(a12, dp));
+    dx = np.concatenate((dSg, dp));
+    print 'a11 ='
+    print a11
+    print 'a12 ='
+    print a12
+    print 'a21 ='
+    print a21
+    print 'a22 ='
+    print a22
+    print 'factors ='
+    print np.dot(_factor, a12), np.dot(_factor, Rw)
+    print 'comp ='
+    print comp
+    print 'Rebar ='
+    print Rebar
+    return (dx, comp, Rebar);
+
 n = 2;
 Vp = [1000, 1000];
 reservoir = Reservoir(n, Vp);
@@ -109,6 +135,7 @@ dt = 1;
 
 steam = prop.steamProp("saturated_steam.org");
 getcontext().prec = 5;
+np.set_printoptions(precision=5);
 
 """
 dSg=[]
@@ -153,24 +180,23 @@ for J in range(1):
     for iter in range(1):
         A = generateJacobian(reservoir, steam, dt, p, Sg);
         RHS = generateRHS(reservoir, steam, dt, p, Sg, p0, Sg0);
-        print A
-        print RHS
-        x = np.linalg.solve(A, RHS);
-        print x
+        #print A
+        #print RHS
+        #x = np.linalg.solve(A, RHS);
+        #print x
 
-        #x, comp, Rbar = linearSolver(reservoir, steam, dt, A, RHS);
+        x, comp, Rebar = linearSolver(reservoir, steam, dt, A, RHS);
         dSg = x[0:2];
         dp = x[2:4];
         Sg = Sg + dSg;
         p = p + dp;
         """
-        print iter, '&',\
-              Decimal(dp).normalize(),'&',\
-              Decimal(dSg).normalize(),'&',\
-              Decimal(comp).normalize(),'&',\
-              Decimal(Sg).normalize(),'&',\
-              Decimal(p).normalize(),'&',\
-              Decimal(Rebar).normalize(),'\\\\'
+        print 'iteration', iter
+        print '  \begin{equation*}'
+        print '    \\bar{a}_{22} = ',comp
+        print '    Rebar =', Rebar
+        print '    dSg =', dSg, 'dp =', dp
+        print '    Sg =', Sg, 'p =', p
         """
 
 """
