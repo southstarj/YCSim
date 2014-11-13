@@ -3,8 +3,10 @@ import scipy as sp
 import matplotlib.pyplot as plt
 import steamProp as prop
 from decimal import *
+import Reservoir
+import Fluid
 
-def calcProp(steam, p):
+def CalcProp(steam, p):
     crho = 0.062428*0.178107607;    # kg/m3 to lb/RB
     rhow = steam.waterDensity(p)
     rhog = steam.steamDensity(p)
@@ -24,35 +26,12 @@ def calcProp(steam, p):
     return (rhow, rhog, drhow, drhog,\
             Hw, Hg, Uw, Ug, drhoUw, drhoUg);
 
-def Transmissibility(Sg):
-    Tw = 1990; Tg = 10;
-    return Tw*(1-Sg) + Tg*Sg;
-
-class Reservoir:
-    def __init__(self, n, Vp):
-        self._size = n;
-        self._poreVol = Vp;
-
-    def Size(self):
-        return self._size;
-    def checkBound(self, i):
-        return (i >= 0) and (i < self._size);
-    def poreVolumeList(self):
-        return self._poreVol;
-    def poreVolume(self, i):
-        if (self.checkBound(i)):
-            return self._poreVol[i];
-        else:
-            print 'Coordinate out of bound'
-            return -1;
-
-
-def accumulationTerm(reservoir, steam, dt, p, Sg, p0, Sg0):
-    Vp = reservoir.poreVolumeList();
+def AccumulationTerm(reservoir, dt, p, Sg, p0, Sg0):
+    Vp = reservoir.PoreVolumeList();
     (rhow, rhog, drhow, drhog, Hw, Hg, Uw, Ug, drhoUw, drhoUg) =\
-        calcProp(steam, p);
+        CalcProp(steam, p);
     (rhow0, rhog0, drhow, drhog, Hw0, Hg0, Uw0, Ug0, drhoUw, drhoUg) =\
-        calcProp(steam, p0);
+        CalcProp(steam, p0);
     Qw = []; Qe = [];
 
     for i in range(reservoir.Size()):
@@ -62,12 +41,12 @@ def accumulationTerm(reservoir, steam, dt, p, Sg, p0, Sg0):
                      (rhow0[i]*(1-Sg0[i])*Uw0[i]+rhog0[i]*Sg0[i]*Ug0[i])));
     return (Qw, Qe);
 
-def generateRHS(reservoir, steam, dt, p, Sg, p0, Sg0):
+def GenerateRHS(reservoir, dt, p, Sg, p0, Sg0):
     (rhow, rhog, drhow, drhog, Hw, Hg, Uw, Ug, drhoUw, drhoUg) =\
-        calcProp(steam, p);
+        CalcProp(steam, p);
     T = 1990*(1-Sg[0])+10*Sg[0];
     TH = 1990*(1-Sg[0])*Hw[0]+10*Sg[0]*Hg[0];
-    Qw, Qe = accumulationTerm(reservoir, steam, dt, p, Sg, p0, Sg0);
+    Qw, Qe = AccumulationTerm(reservoir, steam, dt, p, Sg, p0, Sg0);
 
     Dp = p[0]-p[1];
     Rw0 = T*Dp + Qw[0];
@@ -77,10 +56,10 @@ def generateRHS(reservoir, steam, dt, p, Sg, p0, Sg0):
     RHS = -np.array([Rw0, Rw1, Re0, Re1]);
     return RHS
 
-def generateJacobian(reservoir, steam, dt, p, Sg):
-    Vp = reservoir.poreVolumeList();
+def GenerateJacobian(reservoir, dt, p, Sg):
+    Vp = reservoir.PoreVolumeList();
     (rhow, rhog, drhow, drhog, Hw, Hg, Uw, Ug, drhoUw, drhoUg) =\
-        calcProp(steam, p);
+        CalcProp(steam, p);
     T = 1990*(1-Sg[0])+10*Sg[0];
     TH = 1990*(1-Sg[0])*Hw[0]+10*Sg[0]*Hg[0];
 
@@ -100,7 +79,7 @@ def generateJacobian(reservoir, steam, dt, p, Sg):
                    np.hstack([a21,a22])]);
     return A;
 
-def linearSolver(reservoir, steam, dt, A, RHS):
+def LinearSolver(reservoir, dt, A, RHS):
     a11 = A[0:2, 0:2]; a12 = A[0:2, 2:4];
     a21 = A[2:4, 0:2]; a22 = A[2:4, 2:4];
     Rw = -RHS[0:2]; Re = -RHS[2:4];
@@ -126,80 +105,32 @@ def linearSolver(reservoir, steam, dt, A, RHS):
     print Rebar
     return (dx, comp, Rebar);
 
-n = 2;
-Vp = [1000, 1000];
-reservoir = Reservoir(n, Vp);
-p0 = [600, 500];
-Sg0 = [0.0, 1.0];
+n = 10;
+Vp = [1000 for i in range(10)];
+k = [209 for i in range(10)];
+reservoir = Reservoir.Reservoir(n, Vp, k);
+p0 = [600, 500, 500, 500, 500, 500, 500, 500, 500, 400];
+Sg0 = [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
 dt = 1;
 
-steam = prop.steamProp("saturated_steam.org");
-getcontext().prec = 5;
 np.set_printoptions(precision=5);
 
-"""
-dSg=[]
-dp=[]
-compressibility=[]
-steamSaturation=[]
-pressure=[]
-residual=[]
-
-
-print '\\begin{table}[H]\n\\centering'
-print '\\begin{tabular}{ r r r r r r r r r }'
-print '$J$ & $\\delta S_g$ & $\\delta p$ & $\\hat{a}_{22}$'
-print '& $S_g$ & $p$ & $\\hat{R}_e$ \\\\'
-"""
-for J in range(1):
-    """
-    print '\\centerline{Table',Jvalues.index(J),'}'
-    print '\\centerline{Water Injection into Saturated Steam}'
-    print '\\vspace{20pt}\n'
-
-    print '\\begin{tabular}{ l l }'
-    print '    Injection pressure: &', pi, 'psi \\\\'
-    print '    Cell pressure: &', p0, 'psi \\\\'
-    print '    Cell gas saturation: &', Sg0, '\\\\'
-    print '    Injection enthalpy: &', Hw,\
-          'Btu/lb.(Saturated water at 60psi) \\\\'
-    print '    Injectivity: &', J, '$lb/ft^3\\cdot psi$ \\\\'
-    print '\\end{tabular}'
-    print '\\vspace{20pt}\n'
-
-    print '\\begin{table}[H]\n\\centering'
-    print '\\begin{tabular}{ r r r r r r r }'
-    print 'Itn & $\\delta S_g$ & $\\delta p$ & $\\hat{a}_{22}$'
-    print '& $S_g$ & $p$ & $\\hat{R}_e$ \\\\'
-    """
+for timestep in range(1):
     # Prototype for Newton iteration
     p0 = np.array(p0);
     Sg0 = np.array(Sg0);
     Sg = Sg0;
     p = p0;
     for iter in range(1):
-        A = generateJacobian(reservoir, steam, dt, p, Sg);
-        RHS = generateRHS(reservoir, steam, dt, p, Sg, p0, Sg0);
+        A = GenerateJacobian(reservoir, dt, p, Sg);
+        RHS = GenerateRHS(reservoir, dt, p, Sg, p0, Sg0);
         #print A
         #print RHS
         #x = np.linalg.solve(A, RHS);
         #print x
 
-        x, comp, Rebar = linearSolver(reservoir, steam, dt, A, RHS);
-        dSg = x[0:2];
-        dp = x[2:4];
+        x, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
+        dSg = x[0:n];
+        dp = x[n:(2*n)];
         Sg = Sg + dSg;
         p = p + dp;
-        """
-        print 'iteration', iter
-        print '  \begin{equation*}'
-        print '    \\bar{a}_{22} = ',comp
-        print '    Rebar =', Rebar
-        print '    dSg =', dSg, 'dp =', dp
-        print '    Sg =', Sg, 'p =', p
-        """
-
-"""
-    print '\\end{tabular}\n\\end{table}'
-    print '\\newpage'
-"""

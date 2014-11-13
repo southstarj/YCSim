@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 
 class steamProp:
     def __init__(self, filename):
-        self.data = np.zeros((40, 8));
+        ncol = 10;
+        self.data = np.zeros((40, ncol));
         # read steam propertie table from file
         with open(filename, 'r') as f:
             line = f.readline();
@@ -21,10 +22,10 @@ class steamProp:
                 if len(values) == 0:
                     break;
                 self.data[i] = values;
-                i = i + 1;
+                i += 1;
         # set up spline interpolation object
         self.tck = [];
-        for i in range(8):
+        for i in range(ncol):
             self.tck.append(interpolate.splrep(self.data[:,0],\
                                                self.data[:,i], s=0));
 
@@ -67,3 +68,8 @@ class steamProp:
         return self.extractData(p, 6);
     def steamIntEnergy(self, p):
         return self.extractData(p, 7);
+    def waterViscosity(self, p):
+        return self.extractData(p, 8);
+    def steamViscosity(self, p):
+        return self.extractData(p, 9);
+
