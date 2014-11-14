@@ -3,11 +3,12 @@ import matplotlib.pyplot as plt
 import steamProp
 
 class Reservoir:
-    def __init__(self, n, Vp, k):
+    def __init__(self):
         self._fluid = steamProp.steamProp('saturated_steam.org');
-        self._size = n;
-        self._poreVol = Vp;
-        self._perm = k;
+        self._size = 10;
+        self._nPrimVar = 2;
+        self._poreVol = [1000 for i in range(10)];
+        self._perm = [209 for i in range(10)];
 
     def Size(self):
         return self._size;

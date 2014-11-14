@@ -41,11 +41,9 @@ def AccumulationTerm(reservoir, dt, p, Sg, p0, Sg0):
                      (rhow0[i]*(1-Sg0[i])*Uw0[i]+rhog0[i]*Sg0[i]*Ug0[i])));
     return (Qw, Qe);
 
-def GenerateRHS(reservoir, dt, p, Sg, p0, Sg0):
-    (rhow, rhog, drhow, drhog, Hw, Hg, Uw, Ug, drhoUw, drhoUg) =\
-        CalcProp(steam, p);
-    T = 1990*(1-Sg[0])+10*Sg[0];
-    TH = 1990*(1-Sg[0])*Hw[0]+10*Sg[0]*Hg[0];
+def GenerateRHS(reservoir, dt, x, x0):
+    T = reservoir.Transmissibility();
+    
     Qw, Qe = AccumulationTerm(reservoir, steam, dt, p, Sg, p0, Sg0);
 
     Dp = p[0]-p[1];
@@ -106,24 +104,23 @@ def LinearSolver(reservoir, dt, A, RHS):
     return (dx, comp, Rebar);
 
 n = 10;
+nv = 2;
 Vp = [1000 for i in range(10)];
 k = [209 for i in range(10)];
-reservoir = Reservoir.Reservoir(n, Vp, k);
+reservoir = Reservoir.Reservoir();
 p0 = [600, 500, 500, 500, 500, 500, 500, 500, 500, 400];
 Sg0 = [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+x0 = np.array(Sg0 + p0);
+x = x0;
 dt = 1;
 
 np.set_printoptions(precision=5);
 
 for timestep in range(1):
     # Prototype for Newton iteration
-    p0 = np.array(p0);
-    Sg0 = np.array(Sg0);
-    Sg = Sg0;
-    p = p0;
     for iter in range(1):
-        A = GenerateJacobian(reservoir, dt, p, Sg);
-        RHS = GenerateRHS(reservoir, dt, p, Sg, p0, Sg0);
+        A = GenerateJacobian(reservoir, dt, x);
+        RHS = GenerateRHS(reservoir, dt, x, x0);
         #print A
         #print RHS
         #x = np.linalg.solve(A, RHS);
