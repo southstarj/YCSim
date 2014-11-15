@@ -2,13 +2,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 import steamProp
 
+class ConnectionList:
+    def __init__(self):
+        self._connection = [()];
+        for i in range(1, 9):
+            self._connection.append((i - 1, i + 1));
+        self._connection.append(());
+        
+    def GeoTrans(self, reservoir, i, j):
+        ki = reservoir.Permeability(i);
+        kj = reservoir.Permeability(j);
+        dxi = reservoir.Deltax(i);
+        dxj = reservoir.Deltax(j);
+        km = (dxi + dxj)/(dxi/ki + dxj/kj);
+        return km * reservoir.GetSectionA() * 2 / (dxi + dxj);
+
+    def FluidTrans(self, reservoir, i, j):
+        
+
+
 class Reservoir:
     def __init__(self):
         self._fluid = steamProp.steamProp('saturated_steam.org');
         self._size = 10;
         self._nPrimVar = 2;
         self._poreVol = [1000 for i in range(10)];
-        self._perm = [209 for i in range(10)];
+        self._perm = [20.9 for i in range(10)];
+        self._deltax = 10;
+        self._sectionA = 100;
 
     def Size(self):
         return self._size;
