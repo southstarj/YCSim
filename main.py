@@ -26,40 +26,77 @@ def CalcProp(steam, p):
     return (rhow, rhog, drhow, drhog,\
             Hw, Hg, Uw, Ug, drhoUw, drhoUg);
 
-def AccumulationTerm(reservoir, dt, p, Sg, p0, Sg0):
+def QTerm(reservoir, dt, p, Sg, diffVar=0):
+    n = reservoir.Size();
     Vp = reservoir.PoreVolumeList();
-    (rhow, rhog, drhow, drhog, Hw, Hg, Uw, Ug, drhoUw, drhoUg) =\
-        CalcProp(steam, p);
-    (rhow0, rhog0, drhow, drhog, Hw0, Hg0, Uw0, Ug0, drhoUw, drhoUg) =\
-        CalcProp(steam, p0);
-    Qw = []; Qe = [];
+    steam = reservoir.getFluid();
+    rhow = steam.waterDensity(p);
+    rhog = steam.steamDensity(p);
+    Uw = steam.waterIntEnergy(p);
+    Ug = steam.steamIntEnergy(p);
+    # calculate function value
+    if diffVar == 0:
+        Qw = []; Qe = [];
+        for i in range():
+            Qw.append(Vp[i]/dt*(rhow[i]*(1-Sg[i])+rhog[i]*Sg[i]));
+            Qe.append(Vp[i]/dt*(rhow[i]*(1-Sg[i])*Uw[i]+rhog[i]*Sg[i]*Ug[i]));
+        return (Qw, Qe);
+    # calculate differential
+    dQw = []; dQe = [];
+    if diffVar == 1:
+        drhow = steam.diffProp(steam.waterDensity, p);
+        drhog = steam.diffProp(steam.steamDensity, p);
+        drhoUw = [(x*dy+y*dx) for x,y,dx,dy in zip(rhow,Uw,drhow,dUw)];
+        drhoUg = [(x*dy+y*dx) for x,y,dx,dy in zip(rhog,Ug,drhog,dUg)];
+        for i in range():
+            dQw.append(Vp[i]/dt*(drhow[i]*(1-Sg[i])+drhog[i]*Sg[i]));
+            dQe.append(Vp[i]/dt*(drhoUw[i]*(1-Sg[i])+drhoUg[i]*Sg[i]));
+    if diffVar == 2:
+        for i in range():
+            dQw.append(Vp[i]/dt*(rhog[i] - rhow[i]));
+            dQe.append(Vp[i]/dt*(rhog[i]*Ug[i] - rhow[i]*Uw[i]));
+    return (dQw, dQe);
 
-    for i in range(reservoir.Size()):
-        Qw.append(Vp[i]/dt*((rhow[i]*(1-Sg[i])+rhog[i]*Sg[i]) -\
-                            (rhow0[i]*(1-Sg0[i])+rhog0[i]*Sg0[i])));
-        Qe.append(Vp[i]/dt*((rhow[i]*(1-Sg[i])*Uw[i]+rhog[i]*Sg[i]*Ug[i])-\
-                     (rhow0[i]*(1-Sg0[i])*Uw0[i]+rhog0[i]*Sg0[i]*Ug0[i])));
-    return (Qw, Qe);
+def AccumulationTerm(reservoir, dt, p, Sg, p0, Sg0):
+    Qw1, Qe1 = QTerm(reservoir, p, Sg);
+    Qw0, Qe0 = QTerm(reservoir, p0, Sg0);
+
+    return (np.array(Qw1) - np.array(Qw0), np.array(Qe1) - np.array(Qe0));
 
 def GenerateRHS(reservoir, dt, x, x0):
-    T = reservoir.Transmissibility();
-    
-    Qw, Qe = AccumulationTerm(reservoir, steam, dt, p, Sg, p0, Sg0);
+    n = reservoir.Size();
+    Sg = x[0:n];
+    p = x[n:2*n];
+    Sg0 = x0[0:n];
+    p0 = x0[n:2*n];
 
-    Dp = p[0]-p[1];
-    Rw0 = T*Dp + Qw[0];
-    Rw1 = -T*Dp+ Qw[1];
-    Re0 = TH*Dp+ Qe[0];
-    Re1 =-TH*Dp+ Qe[1];
-    RHS = -np.array([Rw0, Rw1, Re0, Re1]);
-    return RHS
+    Qw, Qe = AccumulationTerm(reservoir, dt, p, Sg, p0, Sg);
+    Rw = Qw; Re = Qe;
+    for i in range(n):
+        _conn = reservoir.GetConnection(i);
+        for k in _conn:
+            T, TH = reservoir.Transmissibility(i, k, x);
+            Dp = p[k] - p[i];
+            Rw[i] += -np.sum(T)*Dp;
+            Re[i] += -np.sum(TH)*Dp;
 
-def GenerateJacobian(reservoir, dt, p, Sg):
+    RHS = -np.hstack((Rw, Re));
+    return RHS;
+
+def GenerateJacobian(reservoir, dt, x):
+    n = reservoir.Size();
     Vp = reservoir.PoreVolumeList();
-    (rhow, rhog, drhow, drhog, Hw, Hg, Uw, Ug, drhoUw, drhoUg) =\
-        CalcProp(steam, p);
-    T = 1990*(1-Sg[0])+10*Sg[0];
-    TH = 1990*(1-Sg[0])*Hw[0]+10*Sg[0]*Hg[0];
+    Sg = x[0:n];
+    p = x[n:2*n];
+
+    a11 = np.zeros((n, n));
+    a12 = np.zeros((n, n));
+    a21 = np.zeros((n, n));
+    a22 = np.zeros((n, n));
+    for i in range(n):
+        _conn = reservoir.GetConnection(i);
+        for k in _conn:
+        # working here
 
     a11 = np.diag([Vp[0]/dt * (rhog[0] - rhow[0]),\
                    Vp[1]/dt * (rhog[1] - rhow[1])]);
