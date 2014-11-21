@@ -37,7 +37,7 @@ def QTerm(reservoir, dt, p, Sg, diffVar=0):
     # calculate function value
     if diffVar == 0:
         Qw = []; Qe = [];
-        for i in range():
+        for i in range(n):
             Qw.append(Vp[i]/dt*(rhow[i]*(1-Sg[i])+rhog[i]*Sg[i]));
             Qe.append(Vp[i]/dt*(rhow[i]*(1-Sg[i])*Uw[i]+rhog[i]*Sg[i]*Ug[i]));
         return (Qw, Qe);
@@ -48,11 +48,11 @@ def QTerm(reservoir, dt, p, Sg, diffVar=0):
         drhog = steam.diffProp(steam.steamDensity, p);
         drhoUw = [(x*dy+y*dx) for x,y,dx,dy in zip(rhow,Uw,drhow,dUw)];
         drhoUg = [(x*dy+y*dx) for x,y,dx,dy in zip(rhog,Ug,drhog,dUg)];
-        for i in range():
+        for i in range(n):
             dQw.append(Vp[i]/dt*(drhow[i]*(1-Sg[i])+drhog[i]*Sg[i]));
             dQe.append(Vp[i]/dt*(drhoUw[i]*(1-Sg[i])+drhoUg[i]*Sg[i]));
     if diffVar == 2:
-        for i in range():
+        for i in range(n):
             dQw.append(Vp[i]/dt*(rhog[i] - rhow[i]));
             dQe.append(Vp[i]/dt*(rhog[i]*Ug[i] - rhow[i]*Uw[i]));
     return (dQw, dQe);
@@ -89,27 +89,30 @@ def GenerateJacobian(reservoir, dt, x):
     Sg = x[0:n];
     p = x[n:2*n];
 
-    a11 = np.zeros((n, n));
-    a12 = np.zeros((n, n));
-    a21 = np.zeros((n, n));
-    a22 = np.zeros((n, n));
+    dQw_dS, dQe_dS = QTerm(reservoir, dt, p, Sg, 1);
+    dQw_dp, dQe_dp = QTerm(reservoir, dt, p, Sg, 2);
+    a11 = np.diag(dQw_dS);
+    a12 = np.zeros(dQe_dS);
+    a21 = np.zeros(dQw_dp);
+    a22 = np.zeros(dQe_dp);
     for i in range(n):
         _conn = reservoir.GetConnection(i);
         for k in _conn:
-        # working here
+            Dp = p[k] - p[i];
+            T, TH = reservoir.Transmissibility(i, k, x);
+            dT_dSk, dTH_dSk = reservoir.Transmissibility(k, i, x, 1);
+            dT_dpk, dTH_dpk = reservoir.Transmissibility(k, i, x, 2);
+            dT_dSi, dTH_dSi = reservoir.Transmissibility(i, k, x, 1);
+            dT_dpi, dTH_dpi = reservoir.Transmissibility(i, k, x, 2);
+            a11[i, k] = -np.sum(dT_dSk)*Dp;
+            a11[i, i] -= np.sum(dT_dSi)*Dp;
+            a21[i, k] = -np.sum(dTH_dSk)*Dp;
+            a21[i, i] -= np.sum(dTH_dSi)*Dp;
+            a12[i, k] = -np.sum(T) - np.sum(dT_dpk)*Dp;
+            a12[i, i] += np.sum(T) - np.sum(dT_dpi)*Dp;
+            a22[i, k] = -np.sum(TH) - np.sum(dTH_dpk)*Dp;
+            a22[i, i] += np.sum(TH) - np.sum(dTH_dpi)*Dp;
 
-    a11 = np.diag([Vp[0]/dt * (rhog[0] - rhow[0]),\
-                   Vp[1]/dt * (rhog[1] - rhow[1])]);
-    a21 = np.diag([Vp[0]/dt * (rhog[0]*Ug[0] - rhow[0]*Uw[0]),\
-                   Vp[1]/dt * (rhog[1]*Ug[1] - rhow[1]*Uw[1])]);
-    a12 = np.array([[T + Vp[0]/dt*((1-Sg[0])*drhow[0]\
-                                     +Sg[0] *drhog[0]), -T],\
-                    [-T, T + Vp[1]/dt*((1-Sg[1])*drhow[1]\
-                                     +Sg[1] *drhog[1])]]);
-    a22 = np.array([[TH + Vp[0]/dt*((1-Sg[0])*drhoUw[0]\
-                                      +Sg[0] *drhoUg[0]), -TH],\
-                    [-TH, TH + Vp[1]/dt*((1-Sg[1])*drhoUw[1]\
-                                           +Sg[1] *drhoUg[1])]]);
     A = np.vstack([np.hstack([a11,a12]),\
                    np.hstack([a21,a22])]);
     return A;

@@ -20,31 +20,45 @@ class ConnectionList:
         km = (dxi + dxj)/(dxi/ki + dxj/kj);
         return km * reservoir.GetSectionA() * 2 / (dxi + dxj);
 
-    def FluidTrans(self, reservoir, pressureField, saturationField, i, j):
+    def FluidTrans(self, reservoir, pressureField, \
+                   saturationField, i, j, diffVar=0):
         u = self.Upstream(pressureField, i, j);
+        if diffVar and u!=i:
+            return 0;
         S = [saturationField[u], 1-saturationField[u]];
         p = pressureField[u];
         kr = np.array(S);
         steam = reservoir.getFluid();
+        if diffVar == 2:
+            dmuw = steam.diffProp(steam.waterViscosity, p);
+            dmug = steam.diffProp(steam.steamViscosity, p);
+            dmu = np.array([dmug, dmuw]);
         muw = steam.waterViscosity(p);
         mug = steam.steamViscosity(p);
         mu = np.array([mug, muw]);
-        return kr/mu;
+        return {0:kr/mu, 1:1/mu, 2:-kr*dmu/np.power(mu, 2)}[diffVar];
 
     def Transmissibility(self, reservoir, pressureField, \
-                         saturationField, i, j):
+                         saturationField, i, j, diffVar=0):
         T = GeoTrans(reservoir, i, j);
-        l = FluidTrans(reservoir, pressureField, saturationField, i, j);
+        l = FluidTrans(reservoir, pressureField, \
+                       saturationField, i, j, diffVar);
         return T*l;
 
     def HeatTrans(self, reservoir, pressureField, \
-                  saturationField, i, j):
+                  saturationField, i, j, diffVar=0):
         u = self.Upstream(pressureField, i, j);
+        if diffVar and u!=i:
+            return 0;
         steam = reservoir.getFluid();
+        if diffVar == 2:
+            dHw = steam.diffProp(steam.waterEnthalpy, p);
+            dHg = steam.diffProp(steam.steamEnthalpy, p);
+            dH = np.array([dHg, dHw]);
         Hw = steam.waterEnthalpy(p);
         Hg = steam.steamEnthalpy(p);
         H = np.array([Hg, Hw]);
-        return H;
+        return {0:H, 1:0, 2:dH}[diffVar];
 
     def Upstream(self, pressureField, i, j):
         if pressureField[i] > pressureField[j]:
@@ -89,10 +103,15 @@ class Reservoir:
             return -1;
     def getFluid(self):
         return self._fluid;
-    def Transmissibility(self, i, j, x):
+    def Transmissibility(self, i, j, x, diffVar=0):
+        #adding i j order
         n = self.Size();
         Sg = x[0:n];
         p = x[n:2*n];
         T = _connList.Transmissibility(self, p, Sg, i, j);
         H = _connList.HeatTrans(self, p, Sg, i, j);
+        if diffVar:
+            dT = _connList.Transmissibility(self, p, Sg, i, j, diffVar);
+            dH = _connList.HeatTrans(self, p, Sg, i, j, diffVar);
+            return (dT, T*dH+H*dT);
         return (T, T*H);
