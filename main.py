@@ -34,6 +34,10 @@ def QTerm(reservoir, dt, p, Sg, diffVar=0):
     rhog = steam.steamDensity(p);
     Uw = steam.waterIntEnergy(p);
     Ug = steam.steamIntEnergy(p);
+    drhow = steam.diffProp(steam.waterDensity, p);
+    drhog = steam.diffProp(steam.steamDensity, p);
+    dUw = steam.diffProp(steam.waterIntEnergy, p);
+    dUg = steam.diffProp(steam.steamIntEnergy, p);
     # calculate function value
     if diffVar == 0:
         Qw = []; Qe = [];
@@ -58,8 +62,8 @@ def QTerm(reservoir, dt, p, Sg, diffVar=0):
     return (dQw, dQe);
 
 def AccumulationTerm(reservoir, dt, p, Sg, p0, Sg0):
-    Qw1, Qe1 = QTerm(reservoir, p, Sg);
-    Qw0, Qe0 = QTerm(reservoir, p0, Sg0);
+    Qw1, Qe1 = QTerm(reservoir, dt, p, Sg);
+    Qw0, Qe0 = QTerm(reservoir, dt, p0, Sg0);
 
     return (np.array(Qw1) - np.array(Qw0), np.array(Qe1) - np.array(Qe0));
 
@@ -92,9 +96,9 @@ def GenerateJacobian(reservoir, dt, x):
     dQw_dS, dQe_dS = QTerm(reservoir, dt, p, Sg, 1);
     dQw_dp, dQe_dp = QTerm(reservoir, dt, p, Sg, 2);
     a11 = np.diag(dQw_dS);
-    a12 = np.zeros(dQe_dS);
-    a21 = np.zeros(dQw_dp);
-    a22 = np.zeros(dQe_dp);
+    a12 = np.diag(dQe_dS);
+    a21 = np.diag(dQw_dp);
+    a22 = np.diag(dQe_dp);
     for i in range(n):
         _conn = reservoir.GetConnection(i);
         for k in _conn:
@@ -143,13 +147,11 @@ def LinearSolver(reservoir, dt, A, RHS):
     print Rebar
     return (dx, comp, Rebar);
 
-n = 10;
+n = 3;
 nv = 2;
-Vp = [1000 for i in range(10)];
-k = [209 for i in range(10)];
 reservoir = Reservoir.Reservoir();
-p0 = [600, 500, 500, 500, 500, 500, 500, 500, 500, 400];
-Sg0 = [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+p0 = [600, 500, 400];
+Sg0 = [0.0, 1.0, 1.0];
 x0 = np.array(Sg0 + p0);
 x = x0;
 dt = 1;
@@ -161,13 +163,15 @@ for timestep in range(1):
     for iter in range(1):
         A = GenerateJacobian(reservoir, dt, x);
         RHS = GenerateRHS(reservoir, dt, x, x0);
-        #print A
-        #print RHS
-        #x = np.linalg.solve(A, RHS);
-        #print x
+        print A
+        print RHS
+        x = np.linalg.solve(A, RHS);
+        print x
 
+        """
         x, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         dSg = x[0:n];
         dp = x[n:(2*n)];
         Sg = Sg + dSg;
         p = p + dp;
+        """
