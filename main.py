@@ -47,7 +47,7 @@ def QTerm(reservoir, dt, p, Sg, diffVar=0):
         return (Qw, Qe);
     # calculate differential
     dQw = []; dQe = [];
-    if diffVar == 1:
+    if diffVar == 2:        # differential p
         drhow = steam.diffProp(steam.waterDensity, p);
         drhog = steam.diffProp(steam.steamDensity, p);
         drhoUw = [(x*dy+y*dx) for x,y,dx,dy in zip(rhow,Uw,drhow,dUw)];
@@ -55,7 +55,7 @@ def QTerm(reservoir, dt, p, Sg, diffVar=0):
         for i in range(n):
             dQw.append(Vp[i]/dt*(drhow[i]*(1-Sg[i])+drhog[i]*Sg[i]));
             dQe.append(Vp[i]/dt*(drhoUw[i]*(1-Sg[i])+drhoUg[i]*Sg[i]));
-    if diffVar == 2:
+    if diffVar == 1:        # differential Sg
         for i in range(n):
             dQw.append(Vp[i]/dt*(rhog[i] - rhow[i]));
             dQe.append(Vp[i]/dt*(rhog[i]*Ug[i] - rhow[i]*Uw[i]));
@@ -81,10 +81,12 @@ def GenerateRHS(reservoir, dt, x, x0):
         for k in _conn:
             T, TH = reservoir.Transmissibility(i, k, x);
             Dp = p[k] - p[i];
+            #print 'i, k = (', i, k, '), T =', T, 'Dp =', Dp
             Rw[i] += -np.sum(T)*Dp;
             Re[i] += -np.sum(TH)*Dp;
 
     RHS = -np.hstack((Rw, Re));
+    #print Rw, Re
     return RHS;
 
 def GenerateJacobian(reservoir, dt, x):
@@ -96,9 +98,15 @@ def GenerateJacobian(reservoir, dt, x):
     dQw_dS, dQe_dS = QTerm(reservoir, dt, p, Sg, 1);
     dQw_dp, dQe_dp = QTerm(reservoir, dt, p, Sg, 2);
     a11 = np.diag(dQw_dS);
-    a12 = np.diag(dQe_dS);
-    a21 = np.diag(dQw_dp);
+    a21 = np.diag(dQe_dS);
+    a12 = np.diag(dQw_dp);
     a22 = np.diag(dQe_dp);
+    """
+    print 'a11 =', a11
+    print 'a12 =', a12
+    print 'a21 =', a21
+    print 'a22 =', a22
+    """
     for i in range(n):
         _conn = reservoir.GetConnection(i);
         for k in _conn:
@@ -108,6 +116,7 @@ def GenerateJacobian(reservoir, dt, x):
             dT_dpk, dTH_dpk = reservoir.Transmissibility(k, i, x, 2);
             dT_dSi, dTH_dSi = reservoir.Transmissibility(i, k, x, 1);
             dT_dpi, dTH_dpi = reservoir.Transmissibility(i, k, x, 2);
+            #print 'i, k = (', i, k, '), dT_dSk =', dT_dSk, 'Dp =', Dp
             a11[i, k] = -np.sum(dT_dSk)*Dp;
             a11[i, i] -= np.sum(dT_dSi)*Dp;
             a21[i, k] = -np.sum(dTH_dSk)*Dp;
@@ -147,31 +156,34 @@ def LinearSolver(reservoir, dt, A, RHS):
     print Rebar
     return (dx, comp, Rebar);
 
-n = 3;
+n = 2;
 nv = 2;
 reservoir = Reservoir.Reservoir();
-p0 = [600, 500, 400];
-Sg0 = [0.0, 1.0, 1.0];
+p0 = [600, 500];
+Sg0 = [0.0, 1.0];
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 1;
+dt = 0.01;
 
 np.set_printoptions(precision=5);
 
 for timestep in range(1):
     # Prototype for Newton iteration
-    for iter in range(1):
+    for iter in range(50):
         A = GenerateJacobian(reservoir, dt, x);
         RHS = GenerateRHS(reservoir, dt, x, x0);
-        print A
-        print RHS
-        x = np.linalg.solve(A, RHS);
-        print x
+        #print A
+        #print RHS
+        dx = np.linalg.solve(A, RHS);
+        #x0 = x;
+        x = x + dx;
+        print 'iter =', iter, x
 
         """
         x, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
-        dSg = x[0:n];
-        dp = x[n:(2*n)];
-        Sg = Sg + dSg;
-        p = p + dp;
+        
+        Sg = x[0:n];
+        p = x[n:(2*n)];
+        print 'Sg =', Sg
+        print 'p =', p
         """

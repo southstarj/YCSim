@@ -4,10 +4,11 @@ import steamProp
 
 class ConnectionList:
     def __init__(self):
-        self._connection = [()];
-        for i in range(1, 2):
+        self._connection = [(1,),(0,)];
+        """
+        for i in range(1):
             self._connection.append((i - 1, i + 1));
-        self._connection.append(());
+        """
 
     def GetConnection(self, i):
         return self._connection[i];
@@ -37,7 +38,7 @@ class ConnectionList:
             dmug = steam.diffProp(steam.steamViscosity, p);
             dmu = np.array([dmug, dmuw]);
             return -kr*dmu/np.power(mu, 2);
-        return {0:kr/mu, 1:1/mu}[diffVar];
+        return {0:kr/mu, 1:np.array([1,-1])/mu}[diffVar];
 
     def Transmissibility(self, reservoir, pressureField, \
                          saturationField, i, j, diffVar=0):
@@ -72,12 +73,12 @@ class ConnectionList:
 class Reservoir:
     def __init__(self):
         self._fluid = steamProp.steamProp('saturated_steam.org');
-        self._size = 3;
+        self._size = 2;
         self._nPrimVar = 2;
-        self._poreVol = [1000 for i in range(3)];
-        self._perm = [20.9 for i in range(3)];
-        self._deltax = 10;
-        self._sectionA = 100;
+        self._poreVol = [1000.0, 1000.0];
+        self._perm = [10.0, 10.0];
+        self._deltax = 10.0;
+        self._sectionA = 100.0;
         self._connList = ConnectionList();
 
     def Size(self):
