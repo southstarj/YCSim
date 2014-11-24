@@ -76,7 +76,7 @@ class Reservoir:
         self._size = 2;
         self._nPrimVar = 2;
         self._poreVol = [1000.0, 1000.0];
-        self._perm = [10.0, 10.0];
+        self._perm = [20.9, 20.9];
         self._deltax = 10.0;
         self._sectionA = 100.0;
         self._connList = ConnectionList();

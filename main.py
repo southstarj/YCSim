@@ -101,12 +101,12 @@ def GenerateJacobian(reservoir, dt, x):
     a21 = np.diag(dQe_dS);
     a12 = np.diag(dQw_dp);
     a22 = np.diag(dQe_dp);
-    """
+    
     print 'a11 =', a11
     print 'a12 =', a12
     print 'a21 =', a21
     print 'a22 =', a22
-    """
+    
     for i in range(n):
         _conn = reservoir.GetConnection(i);
         for k in _conn:
@@ -116,7 +116,7 @@ def GenerateJacobian(reservoir, dt, x):
             dT_dpk, dTH_dpk = reservoir.Transmissibility(k, i, x, 2);
             dT_dSi, dTH_dSi = reservoir.Transmissibility(i, k, x, 1);
             dT_dpi, dTH_dpi = reservoir.Transmissibility(i, k, x, 2);
-            #print 'i, k = (', i, k, '), dT_dSk =', dT_dSk, 'Dp =', Dp
+            print 'i, k = (', i, k, '), dT_dpk =', dT_dpk, dTH_dpk, 'Dp =', Dp
             a11[i, k] = -np.sum(dT_dSk)*Dp;
             a11[i, i] -= np.sum(dT_dSi)*Dp;
             a21[i, k] = -np.sum(dTH_dSk)*Dp;
@@ -163,17 +163,17 @@ p0 = [600, 500];
 Sg0 = [0.0, 1.0];
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 0.01;
+dt = 1.0;
 
 np.set_printoptions(precision=5);
 
 for timestep in range(1):
     # Prototype for Newton iteration
-    for iter in range(50):
+    for iter in range(1):
         A = GenerateJacobian(reservoir, dt, x);
         RHS = GenerateRHS(reservoir, dt, x, x0);
-        #print A
-        #print RHS
+        print A
+        print RHS
         dx = np.linalg.solve(A, RHS);
         #x0 = x;
         x = x + dx;
