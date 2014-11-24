@@ -177,19 +177,20 @@ for J in range(1):
     Sg0 = np.array(Sg0);
     Sg = Sg0;
     p = p0;
-    for iter in range(1):
+    for iter in range(10):
         A = generateJacobian(reservoir, steam, dt, p, Sg);
         RHS = generateRHS(reservoir, steam, dt, p, Sg, p0, Sg0);
         #print A
         #print RHS
-        #x = np.linalg.solve(A, RHS);
-        #print x
+        x = np.linalg.solve(A, RHS);
+        #print 'iter =', iter, x
 
-        x, comp, Rebar = linearSolver(reservoir, steam, dt, A, RHS);
+        #x, comp, Rebar = linearSolver(reservoir, steam, dt, A, RHS);
         dSg = x[0:2];
         dp = x[2:4];
         Sg = Sg + dSg;
         p = p + dp;
+        print 'iter =', iter, 'Sg =', Sg, 'p =', p
         """
         print 'iteration', iter
         print '  \begin{equation*}'
