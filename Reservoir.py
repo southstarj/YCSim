@@ -121,5 +121,5 @@ class Reservoir:
         if diffVar:
             dT = self._connList.Transmissibility(self, p, Sg, i, j, diffVar);
             dH = self._connList.HeatTrans(self, p, Sg, i, j, diffVar);
-            return (dT, T*dH+H*dT);
-        return (T, T*H);
+            return (0, 0); #return (dT, T*dH+H*dT);
+        return (1.99e3, 9.38683e5); #return (T, T*H);

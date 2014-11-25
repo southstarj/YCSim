@@ -101,12 +101,12 @@ def GenerateJacobian(reservoir, dt, x):
     a21 = np.diag(dQe_dS);
     a12 = np.diag(dQw_dp);
     a22 = np.diag(dQe_dp);
-    
+    """
     print 'a11 =', a11
     print 'a12 =', a12
     print 'a21 =', a21
     print 'a22 =', a22
-    
+    """
     for i in range(n):
         _conn = reservoir.GetConnection(i);
         for k in _conn:
@@ -116,7 +116,13 @@ def GenerateJacobian(reservoir, dt, x):
             dT_dpk, dTH_dpk = reservoir.Transmissibility(k, i, x, 2);
             dT_dSi, dTH_dSi = reservoir.Transmissibility(i, k, x, 1);
             dT_dpi, dTH_dpi = reservoir.Transmissibility(i, k, x, 2);
-            print 'i, k = (', i, k, '), dT_dpk =', dT_dpk, dTH_dpk, 'Dp =', Dp
+            """
+            print 'i, k = (', i, k, '):', 'Dp =', Dp
+            print '  dT_dSk', dT_dSk, 'dTH_dSk', dTH_dSk
+            print '  dT_dpk', dT_dpk, 'dTH_dpk', dTH_dpk
+            print '  dT_dSi', dT_dSi, 'dTH_dSi', dTH_dSi
+            print '  dT_dpi', dT_dpi, 'dTH_dpi', dTH_dpi
+            """
             a11[i, k] = -np.sum(dT_dSk)*Dp;
             a11[i, i] -= np.sum(dT_dSi)*Dp;
             a21[i, k] = -np.sum(dTH_dSk)*Dp;
@@ -140,6 +146,7 @@ def LinearSolver(reservoir, dt, A, RHS):
     dp = np.linalg.solve(comp, -Rebar);
     dSg = np.linalg.solve(a11, -Rw - np.dot(a12, dp));
     dx = np.concatenate((dSg, dp));
+    """
     print 'a11 ='
     print a11
     print 'a12 ='
@@ -148,6 +155,7 @@ def LinearSolver(reservoir, dt, A, RHS):
     print a21
     print 'a22 ='
     print a22
+    """
     print 'factors ='
     print np.dot(_factor, a12), np.dot(_factor, Rw)
     print 'comp ='
@@ -169,21 +177,23 @@ np.set_printoptions(precision=5);
 
 for timestep in range(1):
     # Prototype for Newton iteration
-    for iter in range(1):
+    for iter in range(3):
+        print 'iter =', iter
         A = GenerateJacobian(reservoir, dt, x);
         RHS = GenerateRHS(reservoir, dt, x, x0);
         print A
         print RHS
-        dx = np.linalg.solve(A, RHS);
+        #dx = np.linalg.solve(A, RHS);
         #x0 = x;
-        x = x + dx;
-        print 'iter =', iter, x
+        #x = x + dx;
+        #print 'iter =', iter, x
 
-        """
-        x, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
+        
+        dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
+        x = x + dx;
         
         Sg = x[0:n];
         p = x[n:(2*n)];
         print 'Sg =', Sg
         print 'p =', p
-        """
+        
