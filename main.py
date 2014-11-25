@@ -68,6 +68,8 @@ def generateRHS(reservoir, steam, dt, p, Sg, p0, Sg0):
     T = 1990*(1-Sg[0])+10*Sg[0];
     TH = 1990*(1-Sg[0])*Hw[0]+10*Sg[0]*Hg[0];
     Qw, Qe = accumulationTerm(reservoir, steam, dt, p, Sg, p0, Sg0);
+    print 'Qw, Qe =', Qw, Qe
+    print 'p, p0, Sg, Sg0 =', p, p0, Sg, Sg0
 
     Dp = p[0]-p[1];
     Rw0 = T*Dp + Qw[0];
