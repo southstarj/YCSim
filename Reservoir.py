@@ -3,18 +3,17 @@ import matplotlib.pyplot as plt
 import steamProp
 
 class ConnectionList:
-    def __init__(self):
-        self._connection = [(1,),(0,)];
-        """
-        for i in range(1):
+    def __init__(self, n):
+        self._connection = [(1,)];
+        for i in range(1, n - 1, 1):
             self._connection.append((i - 1, i + 1));
-        """
+        self._connection.append((n - 2, ));
 
     def GetConnection(self, i):
         return self._connection[i];
 
     def GeoTrans(self, reservoir, i, j):
-        return np.array([1, 1]);
+        #return np.array([1, 1]);
         ki = reservoir.Permeability(i);
         kj = reservoir.Permeability(j);
         dxi = reservoir.Deltax(i);
@@ -30,7 +29,7 @@ class ConnectionList:
         S = [saturationField[u], 1-saturationField[u]];
         p = pressureField[u];
         kr = np.array(S);
-        return kr*np.array([10, 1990])
+        #return kr*np.array([10, 1990])
         steam = reservoir.getFluid();
         muw = steam.waterViscosity(p);
         mug = steam.steamViscosity(p);
@@ -40,7 +39,7 @@ class ConnectionList:
             dmug = steam.diffProp(steam.steamViscosity, p);
             dmu = np.array([dmug, dmuw]);
             return -kr*dmu/np.power(mu, 2);
-        #return {0:kr/mu, 1:np.array([1,-1])/mu}[diffVar];
+        return {0:kr/mu, 1:np.array([1,-1])/mu}[diffVar];
 
     def Transmissibility(self, reservoir, pressureField, \
                          saturationField, i, j, diffVar=0):
@@ -73,15 +72,15 @@ class ConnectionList:
 
 
 class Reservoir:
-    def __init__(self):
+    def __init__(self, n):
         self._fluid = steamProp.steamProp('saturated_steam.org');
-        self._size = 2;
+        self._size = n;
         self._nPrimVar = 2;
-        self._poreVol = [1000.0, 1000.0];
-        self._perm = [20.9, 20.9];
+        self._poreVol = [1000.0 for i in range(n)];
+        self._perm = [1.0 for i in range(n)];
         self._deltax = 10.0;
         self._sectionA = 100.0;
-        self._connList = ConnectionList();
+        self._connList = ConnectionList(n);
 
     def Size(self):
         return self._size;
@@ -123,5 +122,6 @@ class Reservoir:
         if diffVar:
             dT = self._connList.Transmissibility(self, p, Sg, i, j, diffVar);
             dH = self._connList.HeatTrans(self, p, Sg, i, j, diffVar);
-            return (0, 0); #return (dT, T*dH+H*dT);
-        return (T, T*H); #return (T, T*H);
+            #return (0, 0); 
+            return (dT, T*dH+H*dT);
+        return (T, T*H);

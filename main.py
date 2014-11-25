@@ -29,6 +29,7 @@ def CalcProp(steam, p):
 def QTerm(reservoir, dt, p, Sg, diffVar=0):
     n = reservoir.Size();
     Vp = reservoir.PoreVolumeList();
+    #print 'in QTerm:', 'p =', p, 'Sg =', Sg
     steam = reservoir.getFluid();
     rhow = steam.waterDensity(p);
     rhog = steam.steamDensity(p);
@@ -62,6 +63,7 @@ def QTerm(reservoir, dt, p, Sg, diffVar=0):
 def AccumulationTerm(reservoir, dt, p, Sg, p0, Sg0):
     Qw1, Qe1 = QTerm(reservoir, dt, p, Sg);
     Qw0, Qe0 = QTerm(reservoir, dt, p0, Sg0);
+    #print 'Qwn, Qw0, Qen, Qe0 =', Qw1, Qw0, Qe1, Qe0
 
     return (np.array(Qw1) - np.array(Qw0), np.array(Qe1) - np.array(Qe0));
 
@@ -72,9 +74,10 @@ def GenerateRHS(reservoir, dt, x, x0):
     Sg0 = x0[0:n];
     p0 = x0[n:2*n];
 
-    Qw, Qe = AccumulationTerm(reservoir, dt, p, Sg, p0, Sg);
+    Qw, Qe = AccumulationTerm(reservoir, dt, p, Sg, p0, Sg0);
     Rw = Qw; Re = Qe;
-    print 'Qw, Qe =', Rw, Re
+    #print 'Qw, Qe =', Rw, Re
+    #print 'p, p0, Sg, Sg0 =', p, p0, Sg, Sg0
     for i in range(n):
         _conn = reservoir.GetConnection(i);
         for k in _conn:
@@ -163,36 +166,36 @@ def LinearSolver(reservoir, dt, A, RHS):
     print Rebar
     return (dx, comp, Rebar);
 
-n = 2;
+n = 10;
 nv = 2;
-reservoir = Reservoir.Reservoir();
-p0 = [600, 500];
-Sg0 = [0.0, 1.0];
+reservoir = Reservoir.Reservoir(n);
+p0 = [500 for i in range(n)]; p0[0] = 600;
+Sg0 = [1.0 for i in range(n)];Sg0[0] = 0.0;
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 1.0;
+dt = 0.1;
 
 np.set_printoptions(precision=5);
 
 for timestep in range(1):
     # Prototype for Newton iteration
-    for iter in range(3):
+    for iter in range(10):
         print 'iter =', iter
         A = GenerateJacobian(reservoir, dt, x);
         RHS = GenerateRHS(reservoir, dt, x, x0);
-        print A
-        print RHS
-        #dx = np.linalg.solve(A, RHS);
+        #print A
+        #print RHS
+        dx = np.linalg.solve(A, RHS);
         #x0 = x;
         #x = x + dx;
         #print 'iter =', iter, x
 
         
-        dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
+        #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
         
-        Sg = x[0:n];
-        p = x[n:(2*n)];
-        print 'Sg =', Sg
-        print 'p =', p
+    Sg = x[0:n];
+    p = x[n:(2*n)];
+    print 'Sg =', Sg
+    print 'p =', p
         
