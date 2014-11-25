@@ -14,6 +14,7 @@ class ConnectionList:
         return self._connection[i];
 
     def GeoTrans(self, reservoir, i, j):
+        return np.array([1, 1]);
         ki = reservoir.Permeability(i);
         kj = reservoir.Permeability(j);
         dxi = reservoir.Deltax(i);
@@ -29,6 +30,7 @@ class ConnectionList:
         S = [saturationField[u], 1-saturationField[u]];
         p = pressureField[u];
         kr = np.array(S);
+        return kr*np.array([10, 1990])
         steam = reservoir.getFluid();
         muw = steam.waterViscosity(p);
         mug = steam.steamViscosity(p);
@@ -38,7 +40,7 @@ class ConnectionList:
             dmug = steam.diffProp(steam.steamViscosity, p);
             dmu = np.array([dmug, dmuw]);
             return -kr*dmu/np.power(mu, 2);
-        return {0:kr/mu, 1:np.array([1,-1])/mu}[diffVar];
+        #return {0:kr/mu, 1:np.array([1,-1])/mu}[diffVar];
 
     def Transmissibility(self, reservoir, pressureField, \
                          saturationField, i, j, diffVar=0):
@@ -122,4 +124,4 @@ class Reservoir:
             dT = self._connList.Transmissibility(self, p, Sg, i, j, diffVar);
             dH = self._connList.HeatTrans(self, p, Sg, i, j, diffVar);
             return (0, 0); #return (dT, T*dH+H*dT);
-        return (1.99e3, 9.38683e5); #return (T, T*H);
+        return (T, T*H); #return (T, T*H);

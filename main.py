@@ -34,10 +34,6 @@ def QTerm(reservoir, dt, p, Sg, diffVar=0):
     rhog = steam.steamDensity(p);
     Uw = steam.waterIntEnergy(p);
     Ug = steam.steamIntEnergy(p);
-    drhow = steam.diffProp(steam.waterDensity, p);
-    drhog = steam.diffProp(steam.steamDensity, p);
-    dUw = steam.diffProp(steam.waterIntEnergy, p);
-    dUg = steam.diffProp(steam.steamIntEnergy, p);
     # calculate function value
     if diffVar == 0:
         Qw = []; Qe = [];
@@ -50,6 +46,8 @@ def QTerm(reservoir, dt, p, Sg, diffVar=0):
     if diffVar == 2:        # differential p
         drhow = steam.diffProp(steam.waterDensity, p);
         drhog = steam.diffProp(steam.steamDensity, p);
+        dUw = steam.diffProp(steam.waterIntEnergy, p);
+        dUg = steam.diffProp(steam.steamIntEnergy, p);
         drhoUw = [(x*dy+y*dx) for x,y,dx,dy in zip(rhow,Uw,drhow,dUw)];
         drhoUg = [(x*dy+y*dx) for x,y,dx,dy in zip(rhog,Ug,drhog,dUg)];
         for i in range(n):
@@ -76,6 +74,7 @@ def GenerateRHS(reservoir, dt, x, x0):
 
     Qw, Qe = AccumulationTerm(reservoir, dt, p, Sg, p0, Sg);
     Rw = Qw; Re = Qe;
+    print 'Qw, Qe =', Rw, Re
     for i in range(n):
         _conn = reservoir.GetConnection(i);
         for k in _conn:
