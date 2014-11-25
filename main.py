@@ -88,14 +88,10 @@ def generateJacobian(reservoir, steam, dt, p, Sg):
                    Vp[1]/dt * (rhog[1] - rhow[1])]);
     a21 = np.diag([Vp[0]/dt * (rhog[0]*Ug[0] - rhow[0]*Uw[0]),\
                    Vp[1]/dt * (rhog[1]*Ug[1] - rhow[1]*Uw[1])]);
-    a12 = np.array([[T + Vp[0]/dt*((1-Sg[0])*drhow[0]\
-                                     +Sg[0] *drhog[0]), -T],\
-                    [-T, T + Vp[1]/dt*((1-Sg[1])*drhow[1]\
-                                     +Sg[1] *drhog[1])]]);
-    a22 = np.array([[TH + Vp[0]/dt*((1-Sg[0])*drhoUw[0]\
-                                      +Sg[0] *drhoUg[0]), -TH],\
-                    [-TH, TH + Vp[1]/dt*((1-Sg[1])*drhoUw[1]\
-                                           +Sg[1] *drhoUg[1])]]);
+    a12 = np.array([[T + Vp[0]/dt*((1-Sg[0])*drhow[0]+Sg[0]*drhog[0]), -T],\
+                    [-T, T + Vp[1]/dt*((1-Sg[1])*drhow[1]+Sg[1]*drhog[1])]]);
+    a22 = np.array([[TH + Vp[0]/dt*((1-Sg[0])*drhoUw[0]+Sg[0]*drhoUg[0]), -TH],\
+                   [-TH, TH + Vp[1]/dt*((1-Sg[1])*drhoUw[1]+Sg[1]*drhoUg[1])]]);
     A = np.vstack([np.hstack([a11,a12]),\
                    np.hstack([a21,a22])]);
     return A;
@@ -118,6 +114,8 @@ def linearSolver(reservoir, steam, dt, A, RHS):
     print a21
     print 'a22 ='
     print a22
+    print 'RHS ='
+    print RHS
     print 'factors ='
     print np.dot(_factor, a12), np.dot(_factor, Rw)
     print 'comp ='
@@ -177,20 +175,20 @@ for J in range(1):
     Sg0 = np.array(Sg0);
     Sg = Sg0;
     p = p0;
-    for iter in range(10):
+    for iter in range(3):
         A = generateJacobian(reservoir, steam, dt, p, Sg);
         RHS = generateRHS(reservoir, steam, dt, p, Sg, p0, Sg0);
         #print A
         #print RHS
-        x = np.linalg.solve(A, RHS);
-        #print 'iter =', iter, x
+        #x = np.linalg.solve(A, RHS);
+        print 'iter =', iter #, x
 
-        #x, comp, Rebar = linearSolver(reservoir, steam, dt, A, RHS);
+        x, comp, Rebar = linearSolver(reservoir, steam, dt, A, RHS);
         dSg = x[0:2];
         dp = x[2:4];
         Sg = Sg + dSg;
         p = p + dp;
-        print 'iter =', iter, 'Sg =', Sg, 'p =', p
+        #print 'iter =', iter, 'Sg =', Sg, 'p =', p
         """
         print 'iteration', iter
         print '  \begin{equation*}'
