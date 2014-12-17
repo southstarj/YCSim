@@ -166,23 +166,35 @@ def LinearSolver(reservoir, dt, A, RHS):
     print Rebar
     return (dx, comp, Rebar);
 
+def BoundaryCond_Rate(reservoir, RHS, qT, pB):
+    RHS[0] += qT;
+    HB = reservoir.getFluid().waterEnthalpy(pB);
+    RHS[reservoir.Size()] += qT*HB;
+    return RHS;
+
 n = 10;
 nv = 2;
 reservoir = Reservoir.Reservoir(n);
-p0 = [500 for i in range(n)]; p0[0] = 600;
-Sg0 = [1.0 for i in range(n)];Sg0[0] = 0.0;
+p0 = [500 for i in range(n)];  p0[n-1] = 500;
+Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
+qT = 100; pB = 600;
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 0.1;
+dt = 1;
 
 np.set_printoptions(precision=5);
 
-for timestep in range(1):
+for timestep in range(1000):
+    print 'time step:', timestep
     # Prototype for Newton iteration
     for iter in range(10):
-        print 'iter =', iter
-        A = GenerateJacobian(reservoir, dt, x);
+        #print 'iter =', iter
         RHS = GenerateRHS(reservoir, dt, x, x0);
+        RHS = BoundaryCond_Rate(reservoir, RHS, qT, pB);
+        if np.linalg.norm(RHS) < 1e-3:
+            print '  iteration number:', iter
+            break;
+        A = GenerateJacobian(reservoir, dt, x);
         #print A
         #print RHS
         dx = np.linalg.solve(A, RHS);
@@ -190,12 +202,11 @@ for timestep in range(1):
         #x = x + dx;
         #print 'iter =', iter, x
 
-        
         #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
-        
+
     Sg = x[0:n];
     p = x[n:(2*n)];
     print 'Sg =', Sg
     print 'p =', p
-        
+    x0 = x;
