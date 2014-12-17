@@ -74,9 +74,9 @@ def GenerateRHS(reservoir, dt, x, x0):
     Sg0 = x0[0:n];
     p0 = x0[n:2*n];
 
-    Qw, Qe = AccumulationTerm(reservoir, dt, p, Sg, p0, Sg0);
-    Rw = Qw; Re = Qe;
-    #print 'Qw, Qe =', Rw, Re
+    DQw, DQe = AccumulationTerm(reservoir, dt, p, Sg, p0, Sg0);
+    Rw = DQw; Re = DQe;
+    #print 'DQw, DQe =', Rw, Re
     #print 'p, p0, Sg, Sg0 =', p, p0, Sg, Sg0
     for i in range(n):
         _conn = reservoir.GetConnection(i);
@@ -175,16 +175,17 @@ def BoundaryCond_Rate(reservoir, RHS, qT, pB):
 n = 10;
 nv = 2;
 reservoir = Reservoir.Reservoir(n);
-p0 = [500 for i in range(n)];  p0[n-1] = 500;
+# initial distribution(12.17)
+p0 = [500 for i in range(n)];  p0[0] = 600;
 Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
-qT = 100; pB = 600;
+qT = 1000; pB = 600;                # water injection(12.17)
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 1;
+dt = 0.1;                           # time step(12.17)
 
 np.set_printoptions(precision=5);
 
-for timestep in range(1000):
+for timestep in range(10):
     print 'time step:', timestep
     # Prototype for Newton iteration
     for iter in range(10):
