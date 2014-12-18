@@ -8,7 +8,7 @@ class ConnectionList:
         self._connection = [(1,)];
         for i in range(1, n - 1, 1):
             self._connection.append((i - 1, i + 1));
-        self._connection.append((n - 2, ));
+        self._connection.append(());#(n - 2, ));
 
     def GetConnection(self, i):
         return self._connection[i];
@@ -79,9 +79,9 @@ class Reservoir:
         self._nPrimVar = 2;
         # geology setting(12.17)
         self._poreVol = [100.0 for i in range(n)];
-        self._perm = [10.0 for i in range(n)];
-        self._deltax = 100.0;
-        self._sectionA = 1.0;
+        self._perm = [2.0 for i in range(n)];
+        self._deltax = 10.0;
+        self._sectionA = 10.0;
         self._connList = ConnectionList(n);
 
     def Size(self):
