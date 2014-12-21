@@ -7,7 +7,7 @@ import Reservoir
 import Fluid
 from Simulator import *
 
-n = 10;
+n = 2;
 nv = 2;
 # geological settings
 poreVol = [100.0 for i in range(n)];
@@ -32,7 +32,7 @@ AxGridblock = fig.add_subplot(411, sharex=AxSaturation)
 AxPressure = fig.add_subplot(413, sharex=AxSaturation)
 AxTemperature = fig.add_subplot(414, sharex=AxSaturation)
 
-for timestep in range(101):
+for timestep in range(51):
     print 'time step:', timestep
     # Prototype for Newton iteration
     for iter in range(100):
@@ -52,18 +52,17 @@ for timestep in range(101):
 
         #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
-        if timestep == 14:
+        if timestep == 150:
             print 'iter =', iter
             print 'Jacobian ='
             print A
-            print 'RHS ='
-            print RHS
-            print 'dx ='
-            print dx
-            print 'x ='
-            print x
+            print 'RHS =', RHS
+            print 'dx =', dx
+            dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
+            print 'new dx =', dx
+            print 'x =', x
 
-    if timestep == 14:
+    if timestep == 150:
         print x0
         print dx
         print x
