@@ -73,15 +73,15 @@ class ConnectionList:
 
 
 class Reservoir:
-    def __init__(self, n):
+    def __init__(self, n, poreVol, perm, dx, A):
         self._fluid = steamProp.steamProp('saturated_steam.org');
         self._size = n;
         self._nPrimVar = 2;
         # geology setting(12.17)
-        self._poreVol = [100.0 for i in range(n)];
-        self._perm = [2.0 for i in range(n)];
-        self._deltax = 10.0;
-        self._sectionA = 10.0;
+        self._poreVol = poreVol;
+        self._perm = perm;
+        self._deltax = dx;
+        self._sectionA = A;
         self._connList = ConnectionList(n);
 
     def Size(self):

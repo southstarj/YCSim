@@ -9,7 +9,12 @@ from Simulator import *
 
 n = 10;
 nv = 2;
-reservoir = Reservoir.Reservoir(n);
+# geological settings
+poreVol = [100.0 for i in range(n)];
+perm = [2.0 for i in range(n)];
+deltax = 10.0;
+Area = 10.0;
+reservoir = Reservoir.Reservoir(n, poreVol, perm, deltax, Area);
 # initial distribution(12.17)
 p0 = [500 for i in range(n)];  p0[0] = 500;
 Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
@@ -47,8 +52,18 @@ for timestep in range(101):
 
         #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
+        if timestep == 14:
+            print 'iter =', iter
+            print 'Jacobian ='
+            print A
+            print 'RHS ='
+            print RHS
+            print 'dx ='
+            print dx
+            print 'x ='
+            print x
 
-    if timestep == 71:
+    if timestep == 14:
         print x0
         print dx
         print x
