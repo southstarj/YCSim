@@ -52,7 +52,7 @@ for timestep in range(101):
 
         #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
-        if timestep == 14:
+        if timestep == 140:
             print 'iter =', iter
             print 'Jacobian ='
             print A
@@ -63,7 +63,7 @@ for timestep in range(101):
             print 'x ='
             print x
 
-    if timestep == 14:
+    if timestep == 140:
         print x0
         print dx
         print x
