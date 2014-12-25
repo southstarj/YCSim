@@ -11,14 +11,14 @@ n = 10;
 nv = 2;
 # geological settings
 poreVol = [100.0 for i in range(n)];
-perm = [2.0 for i in range(n)];
+perm = [20.0 for i in range(n)];
 deltax = 10.0;
 Area = 10.0;
 reservoir = Reservoir.Reservoir(n, poreVol, perm, deltax, Area);
 # initial distribution(12.17)
 p0 = [500 for i in range(n)];  p0[0] = 500;
 Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
-qT = 7; pB = 600;                # water injection(12.17)
+qT = 0.01; pB = 600;                # water injection(12.17)
 x0 = np.array(Sg0 + p0);
 x = x0;
 dt = 1;                           # time step(12.17)
@@ -32,7 +32,7 @@ AxGridblock = fig.add_subplot(411, sharex=AxSaturation)
 AxPressure = fig.add_subplot(413, sharex=AxSaturation)
 AxTemperature = fig.add_subplot(414, sharex=AxSaturation)
 
-for timestep in range(101):
+for timestep in range(21):
     print 'time step:', timestep
     # Prototype for Newton iteration
     for iter in range(100):
@@ -52,7 +52,7 @@ for timestep in range(101):
 
         #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
-        if timestep == 74:
+        if timestep == -1:
             print 'iter =', iter
             #print 'Jacobian ='
             #print A
@@ -62,7 +62,7 @@ for timestep in range(101):
             #print 'new dx =', dx
             print 'x =', x
 
-    if timestep == 74:
+    if timestep == -1:
         print x0
         #print dx
         print x

@@ -169,6 +169,8 @@ def LinearSolver(reservoir, dt, A, RHS):
 def BoundaryCond_Rate(reservoir, RHS, qT, pB):
     rhoB = reservoir.getFluid().waterDensity(pB);
     HB = reservoir.getFluid().waterEnthalpy(pB);
-    RHS[0] += qT*rhoB;
-    RHS[reservoir.Size()] += qT*rhoB*HB;
+    #print 'rhoB, HB, qT =', rhoB, HB, qT
+    #print RHS
+    RHS[0] += -qT*rhoB;
+    RHS[reservoir.Size()] += -qT*rhoB*HB;
     return RHS;
