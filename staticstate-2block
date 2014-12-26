@@ -1,0 +1,132 @@
+time step: 0
+  iteration number: 3
+Sg = [ 0.93338  1.     ]
+p = [ 500.15959  500.     ]
+time step: 1
+  iteration number: 2
+Sg = [ 0.8668  1.    ]
+p = [ 500.17207  500.     ]
+time step: 2
+  iteration number: 2
+Sg = [ 0.80027  1.     ]
+p = [ 500.18628  500.     ]
+time step: 3
+  iteration number: 2
+Sg = [ 0.73379  1.     ]
+p = [ 500.20304  500.     ]
+time step: 4
+  iteration number: 3
+Sg = [ 0.66739  1.     ]
+p = [ 500.22307  500.     ]
+time step: 5
+  iteration number: 3
+Sg = [ 0.60108  1.     ]
+p = [ 500.24746  500.     ]
+time step: 6
+  iteration number: 3
+Sg = [ 0.53487  1.     ]
+p = [ 500.27776  500.     ]
+time step: 7
+  iteration number: 3
+Sg = [ 0.4688  1.    ]
+p = [ 500.3164  500.    ]
+time step: 8
+  iteration number: 3
+Sg = [ 0.4029  1.    ]
+p = [ 500.36734  500.     ]
+time step: 9
+  iteration number: 3
+Sg = [ 0.33725  1.     ]
+p = [ 500.43742  500.     ]
+time step: 10
+  iteration number: 3
+Sg = [ 0.27195  1.     ]
+p = [ 500.53966  500.     ]
+time step: 11
+  iteration number: 3
+Sg = [ 0.20721  1.     ]
+p = [ 500.70189  500.     ]
+time step: 12
+  iteration number: 3
+Sg = [ 0.14346  1.     ]
+p = [ 500.99503  500.     ]
+time step: 13
+  iteration number: 4
+Sg = [ 0.08193  1.     ]
+p = [ 501.65633  500.     ]
+time step: 14
+  iteration number: 4
+Sg = [ 0.0277  1.    ]
+p = [ 503.88044  500.     ]
+time step: 15
+  iteration number: 5
+Sg = [ -5.43240e-05   1.00000e+00]
+p = [ 511.94236  500.     ]
+time step: 16
+  iteration number: 3
+Sg = [-0.00119  1.     ]
+p = [ 519.15031  500.     ]
+time step: 17
+  iteration number: 3
+Sg = [ 0.00294  1.     ]
+p = [ 519.77696  500.     ]
+time step: 18
+  iteration number: 3
+Sg = [ 0.00435  1.     ]
+p = [ 518.84455  500.     ]
+time step: 19
+  iteration number: 2
+Sg = [ 0.00414  1.     ]
+p = [ 518.47244  500.     ]
+time step: 20
+  iteration number: 2
+Sg = [ 0.00386  1.     ]
+p = [ 518.49963  500.     ]
+time step: 21
+  iteration number: 2
+Sg = [ 0.0038  1.    ]
+p = [ 518.56659  500.     ]
+time step: 22
+  iteration number: 2
+Sg = [ 0.00383  1.     ]
+p = [ 518.58326  500.     ]
+time step: 23
+  iteration number: 2
+Sg = [ 0.00385  1.     ]
+p = [ 518.57799  500.     ]
+time step: 24
+  iteration number: 1
+Sg = [ 0.00385  1.     ]
+p = [ 518.57374  500.     ]
+time step: 25
+  iteration number: 1
+Sg = [ 0.00384  1.     ]
+p = [ 518.57323  500.     ]
+time step: 26
+  iteration number: 1
+Sg = [ 0.00384  1.     ]
+p = [ 518.57374  500.     ]
+time step: 27
+  iteration number: 1
+Sg = [ 0.00384  1.     ]
+p = [ 518.57398  500.     ]
+time step: 28
+  iteration number: 1
+Sg = [ 0.00384  1.     ]
+p = [ 518.57397  500.     ]
+time step: 29
+  iteration number: 1
+Sg = [ 0.00384  1.     ]
+p = [ 518.57393  500.     ]
+time step: 30
+  iteration number: 1
+Sg = [ 0.00384  1.     ]
+p = [ 518.57392  500.     ]
+time step: 31
+  iteration number: 1
+Sg = [ 0.00384  1.     ]
+p = [ 518.57393  500.     ]
+time step: 32
+  iteration number: 1
+Sg = [ 0.00384  1.     ]
+p = [ 518.57393  500.     ]
