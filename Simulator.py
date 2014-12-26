@@ -156,20 +156,21 @@ def LinearSolver(reservoir, dt, A, RHS):
     print a21
     print 'a22 ='
     print a22
-    """
+    
     print 'factors ='
     print np.dot(_factor, a12), np.dot(_factor, Rw)
     print 'comp ='
     print comp
     print 'Rebar ='
     print Rebar
+    """
     return (dx, comp, Rebar);
 
-def BoundaryCond_Rate(reservoir, RHS, qT, pB):
-    rhoB = reservoir.getFluid().waterDensity(pB);
-    HB = reservoir.getFluid().waterEnthalpy(pB);
+def BoundaryCond_Rate(reservoir, RHS, qT, pWater, pInj):
+    rhoB = reservoir.getFluid().waterDensity(pInj);
+    HB = reservoir.getFluid().waterEnthalpy(pWater);
     #print 'rhoB, HB, qT =', rhoB, HB, qT
     #print RHS
-    RHS[0] += -qT*rhoB;
-    RHS[reservoir.Size()] += -qT*rhoB*HB;
+    RHS[0] += qT*rhoB;
+    RHS[reservoir.Size()] += qT*rhoB*HB;
     return RHS;
