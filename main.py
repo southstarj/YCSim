@@ -2,26 +2,25 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 import steamProp as prop
-from decimal import *
 import Reservoir
 import Fluid
 from Simulator import *
 
-n = 10;
+n = 2;
 nv = 2;
 # geological settings
 poreVol = [100.0 for i in range(n)];
 perm = [20.0 for i in range(n)];
-deltax = 10.0;
-Area = 10.0;
+deltax = 1.0;
+Area = 100.0;
 reservoir = Reservoir.Reservoir(n, poreVol, perm, deltax, Area);
-# initial distribution(12.17)
-p0 = [500 for i in range(n)];  p0[0] = 500;
-Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
-qT = 0.01; pB = 600;                # water injection(12.17)
+# initial distribution
+p0 = [500 for i in range(n)];  p0[0] = 600;
+Sg0 = [1.0 for i in range(n)]; Sg0[0] = 0.0;
+qT = 1.0; pB = 60;                # water injection
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 1;                           # time step(12.17)
+dt = 1.0;                           # time step
 
 np.set_printoptions(precision=5);
 
@@ -52,17 +51,17 @@ for timestep in range(21):
 
         #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
-        if timestep == -1:
+        if timestep == 0:
             print 'iter =', iter
-            #print 'Jacobian ='
-            #print A
-            #print 'RHS =', RHS
-            print 'dx =', dx
-            #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
+            print 'Jacobian ='
+            print np.array([[A[0][0], A[0][2]],[A[2][0], A[2][2]]])
+            print 'RHS =', np.array([RHS[0], RHS[2]])
+            print 'dx =', np.array([dx[0], dx[2]])
+            dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
             #print 'new dx =', dx
-            print 'x =', x
+            print 'x =', np.array([x[0], x[2]])
 
-    if timestep == -1:
+    if timestep == 0:
         print x0
         #print dx
         print x

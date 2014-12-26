@@ -4,11 +4,11 @@ import steamProp
 
 class ConnectionList:
     def __init__(self, n):
-        # connection set-up(12.17)
+        # connection set-up
         self._connection = [(1,)];
         for i in range(1, n - 1, 1):
             self._connection.append((i - 1, i + 1));
-        self._connection.append(());#(n - 2, ));
+        self._connection.append((n-2,));
 
     def GetConnection(self, i):
         return self._connection[i];
