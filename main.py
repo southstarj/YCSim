@@ -11,18 +11,18 @@ nv = 2;
 # geological settings
 poreVol = [100.0 for i in range(n)];
 perm = [2.0 for i in range(n)];
-deltax = 1.0;
-Area = 100.0;
+deltax = 10.0;
+Area = 10.0;
 reservoir = Reservoir.Reservoir(n, poreVol, perm, deltax, Area);
 # initial distribution
 p0 = [500 for i in range(n)];  p0[0] = 500;
 Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
-qT = 1.0; pWater = 600; pInj = 600;                # water injection
+qT = -1.0; pWater = 600; pInj = 600;                # water injection
 rhoB = reservoir.getFluid().waterDensity(pInj);
 HB = reservoir.getFluid().waterEnthalpy(pWater);
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 1.0;                           # time step
+dt = 10.0;                           # time step
 
 np.set_printoptions(precision=5);
 
@@ -33,7 +33,7 @@ AxGridblock = fig.add_subplot(411, sharex=AxSaturation)
 AxPressure = fig.add_subplot(413, sharex=AxSaturation)
 AxTemperature = fig.add_subplot(414, sharex=AxSaturation)
 
-for timestep in range(101):
+for timestep in range(201):
     print 'time step:', timestep
     # Prototype for Newton iteration
     for iter in range(100):
@@ -82,6 +82,12 @@ for timestep in range(101):
     print 'Sg =', Sg
     print 'p =', p
     x0 = x;
+    if iter == 0:
+        print 'Steady State'
+        break;
+    if iter == 99:
+        print 'Not Converge'
+        break;
     
     if timestep%20 == 0:
         AxSaturation.plot(Sg)

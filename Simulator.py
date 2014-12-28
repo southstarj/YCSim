@@ -171,6 +171,6 @@ def BoundaryCond_Rate(reservoir, RHS, qT, pWater, pInj):
     HB = reservoir.getFluid().waterEnthalpy(pWater);
     #print 'rhoB, HB, qT =', rhoB, HB, qT
     #print RHS
-    RHS[0] += qT*rhoB;
-    RHS[reservoir.Size()] += qT*rhoB*HB;
+    RHS[0] += -qT*rhoB;
+    RHS[reservoir.Size()] += -qT*rhoB*HB;
     return RHS;
