@@ -82,7 +82,7 @@ def GenerateRHS(reservoir, dt, x, x0):
         for k in _conn:
             T, TH = reservoir.Transmissibility(i, k, x);
             Dp = p[k] - p[i];
-            print 'i, k = (', i, k, '), T =', T, 'Dp =', Dp
+            #print 'i, k = (', i, k, '), T =', T, 'Dp =', Dp
             Rw[i] += -np.sum(T)*Dp;
             Re[i] += -np.sum(TH)*Dp;
 
@@ -138,9 +138,10 @@ def GenerateJacobian(reservoir, dt, x):
     return A;
 
 def LinearSolver(reservoir, dt, A, RHS):
-    a11 = A[0:2, 0:2]; a12 = A[0:2, 2:4];
-    a21 = A[2:4, 0:2]; a22 = A[2:4, 2:4];
-    Rw = -RHS[0:2]; Re = -RHS[2:4];
+    n = reservoir.Size();
+    a11 = A[0:n, 0:n]; a12 = A[0:n, n:2*n];
+    a21 = A[n:2*n, 0:n]; a22 = A[n:2*n, n:2*n];
+    Rw = -RHS[0:n]; Re = -RHS[n:2*n];
     _factor = np.dot(a21, np.linalg.inv(a11));
     comp = a22 - np.dot(_factor, a12);
     Rebar = Re - np.dot(_factor, Rw);
@@ -166,11 +167,28 @@ def LinearSolver(reservoir, dt, A, RHS):
     """
     return (dx, comp, Rebar);
 
-def BoundaryCond_Rate(reservoir, RHS, qT, pWater, pInj):
+def BoundaryCond_Rate(reservoir, RHS, qT, pWater, pInj, blocknum):
     rhoB = reservoir.getFluid().waterDensity(pInj);
     HB = reservoir.getFluid().waterEnthalpy(pWater);
     #print 'rhoB, HB, qT =', rhoB, HB, qT
     #print RHS
-    RHS[0] += -qT*rhoB;
-    RHS[reservoir.Size()] += -qT*rhoB*HB;
+    RHS[blocknum] += -qT*rhoB;
+    RHS[reservoir.Size() + blocknum] += -qT*rhoB*HB;
     return RHS;
+
+def BoundaryCond_Pres(reservoir, A, RHS, pWater, pInj, pBlock, blocknum):
+    rhoB = reservoir.getFluid().waterDensity(pInj);
+    HB = reservoir.getFluid().waterEnthalpy(pWater);
+    muB = reservoir.getFluid().waterViscosity(pWater);
+    Dp = pInj - pBlock;
+    n = reservoir.Size();
+    J = reservoir.Permeability(blocknum)*reservoir.GetSectionA() \
+         /(reservoir.Deltax(blocknum)*muB);
+    #print 'rhoB, HB, J =', rhoB, HB, J
+    #print RHS
+    #print 'Injectivity =', J*rhoB, J*rhoB*HB
+    A[blocknum][n+blocknum] += J*rhoB;
+    A[n+blocknum][n+blocknum] += J*rhoB*HB;
+    RHS[blocknum] += J*Dp*rhoB;
+    RHS[n+blocknum] += J*Dp*rhoB*HB;
+    return A, RHS;

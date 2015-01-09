@@ -1,0 +1,440 @@
+time step: 0
+iter = 0
+Jacobian =
+[[ -5.39494e+04   3.39216e+00]
+ [ -1.88147e+07   2.32132e+03]]
+RHS = [  139.59152  7352.87242]
+comp = [[ 1138.31085]]
+Rebar = [ 41329.40448]
+dx = [ -4.87036e-03  -3.63077e+01]
+x = [   0.99513  163.69234]
+iter = 1
+Jacobian =
+[[ -5.46548e+04   3.41107e+00]
+ [ -1.81812e+07   2.54822e+03]]
+RHS = [ -2.36485e+00   4.25973e+03]
+comp = [[ 1413.51336]]
+Rebar = [-5046.40754]
+dx = [  2.66084e-04   3.57012e+00]
+x = [   0.9954   167.26246]
+iter = 2
+Jacobian =
+[[ -5.45816e+04   3.39577e+00]
+ [ -1.82499e+07   2.51647e+03]]
+RHS = [  1.73230e-02   6.57749e+01]
+comp = [[ 1381.06459]]
+Rebar = [-59.98279]
+dx = [  2.38474e-06   4.34323e-02]
+x = [   0.9954   167.30589]
+iter = 3
+Jacobian =
+[[ -5.45807e+04   3.39556e+00]
+ [ -1.82507e+07   2.51610e+03]]
+RHS = [  3.34447e-06   9.04053e-03]
+comp = [[ 1380.69358]]
+Rebar = [-0.00792]
+dx = [  2.95686e-10   5.73785e-06]
+x = [   0.9954   167.30589]
+  iteration number: 4
+Sg = [ 0.9954]
+p = [ 167.30589]
+time step: 1
+  iteration number: 4
+Sg = [ 0.99001]
+p = [ 134.89105]
+time step: 2
+  iteration number: 3
+Sg = [ 0.98404]
+p = [ 103.40813]
+time step: 3
+  iteration number: 4
+Sg = [ 0.97772]
+p = [ 75.90747]
+time step: 4
+  iteration number: 4
+Sg = [ 0.97127]
+p = [ 53.11187]
+time step: 5
+  iteration number: 4
+Sg = [ 0.96468]
+p = [ 38.46488]
+time step: 6
+  iteration number: 4
+Sg = [ 0.95809]
+p = [ 28.16947]
+time step: 7
+  iteration number: 5
+Sg = [ 0.95165]
+p = [ 20.34525]
+time step: 8
+  iteration number: 5
+Sg = [ 0.94514]
+p = [ 15.35314]
+time step: 9
+  iteration number: 4
+Sg = [ 0.93853]
+p = [ 12.28735]
+time step: 10
+  iteration number: 6
+Sg = [ 0.93203]
+p = [ 9.67503]
+time step: 11
+  iteration number: 6
+Sg = [ 0.92555]
+p = [ 7.68751]
+time step: 12
+  iteration number: 4
+Sg = [ 0.91892]
+p = [ 6.52241]
+time step: 13
+  iteration number: 4
+Sg = [ 0.91226]
+p = [ 5.71674]
+time step: 14
+  iteration number: 5
+Sg = [ 0.90561]
+p = [ 5.10318]
+time step: 15
+  iteration number: 5
+Sg = [ 0.89896]
+p = [ 4.61625]
+time step: 16
+  iteration number: 5
+Sg = [ 0.89231]
+p = [ 4.21994]
+time step: 17
+  iteration number: 4
+Sg = [ 0.88566]
+p = [ 3.89104]
+time step: 18
+  iteration number: 4
+Sg = [ 0.879]
+p = [ 3.61361]
+time step: 19
+  iteration number: 4
+Sg = [ 0.87235]
+p = [ 3.37636]
+time step: 20
+  iteration number: 4
+Sg = [ 0.86569]
+p = [ 3.17106]
+time step: 21
+  iteration number: 4
+Sg = [ 0.85902]
+p = [ 2.99158]
+time step: 22
+  iteration number: 4
+Sg = [ 0.85236]
+p = [ 2.83329]
+time step: 23
+  iteration number: 4
+Sg = [ 0.84569]
+p = [ 2.6926]
+time step: 24
+  iteration number: 4
+Sg = [ 0.83902]
+p = [ 2.56669]
+time step: 25
+  iteration number: 4
+Sg = [ 0.83234]
+p = [ 2.45332]
+time step: 26
+  iteration number: 4
+Sg = [ 0.82567]
+p = [ 2.35069]
+time step: 27
+  iteration number: 4
+Sg = [ 0.81899]
+p = [ 2.25733]
+time step: 28
+  iteration number: 4
+Sg = [ 0.81231]
+p = [ 2.17202]
+time step: 29
+  iteration number: 4
+Sg = [ 0.80563]
+p = [ 2.09376]
+time step: 30
+  iteration number: 4
+Sg = [ 0.79895]
+p = [ 2.0217]
+time step: 31
+  iteration number: 4
+Sg = [ 0.79226]
+p = [ 1.95512]
+time step: 32
+  iteration number: 4
+Sg = [ 0.78558]
+p = [ 1.89342]
+time step: 33
+  iteration number: 4
+Sg = [ 0.77889]
+p = [ 1.83608]
+time step: 34
+  iteration number: 4
+Sg = [ 0.7722]
+p = [ 1.78265]
+time step: 35
+  iteration number: 4
+Sg = [ 0.76551]
+p = [ 1.73273]
+time step: 36
+  iteration number: 4
+Sg = [ 0.75882]
+p = [ 1.686]
+time step: 37
+  iteration number: 4
+Sg = [ 0.75213]
+p = [ 1.64215]
+time step: 38
+  iteration number: 4
+Sg = [ 0.74544]
+p = [ 1.60092]
+time step: 39
+  iteration number: 4
+Sg = [ 0.73875]
+p = [ 1.56209]
+time step: 40
+  iteration number: 4
+Sg = [ 0.73205]
+p = [ 1.52545]
+time step: 41
+  iteration number: 4
+Sg = [ 0.72536]
+p = [ 1.49081]
+time step: 42
+  iteration number: 4
+Sg = [ 0.71866]
+p = [ 1.45803]
+time step: 43
+  iteration number: 4
+Sg = [ 0.71197]
+p = [ 1.42695]
+time step: 44
+  iteration number: 4
+Sg = [ 0.70527]
+p = [ 1.39744]
+time step: 45
+  iteration number: 4
+Sg = [ 0.69857]
+p = [ 1.36939]
+time step: 46
+  iteration number: 4
+Sg = [ 0.69187]
+p = [ 1.34269]
+time step: 47
+  iteration number: 4
+Sg = [ 0.68518]
+p = [ 1.31725]
+time step: 48
+  iteration number: 4
+Sg = [ 0.67848]
+p = [ 1.29298]
+time step: 49
+  iteration number: 4
+Sg = [ 0.67178]
+p = [ 1.26979]
+time step: 50
+  iteration number: 4
+Sg = [ 0.66508]
+p = [ 1.24762]
+time step: 51
+  iteration number: 4
+Sg = [ 0.65838]
+p = [ 1.22641]
+time step: 52
+  iteration number: 4
+Sg = [ 0.65167]
+p = [ 1.20608]
+time step: 53
+  iteration number: 4
+Sg = [ 0.64497]
+p = [ 1.1866]
+time step: 54
+  iteration number: 4
+Sg = [ 0.63827]
+p = [ 1.1679]
+time step: 55
+  iteration number: 4
+Sg = [ 0.63157]
+p = [ 1.14993]
+time step: 56
+  iteration number: 4
+Sg = [ 0.62487]
+p = [ 1.13267]
+time step: 57
+  iteration number: 4
+Sg = [ 0.61816]
+p = [ 1.11606]
+time step: 58
+  iteration number: 4
+Sg = [ 0.61146]
+p = [ 1.10007]
+time step: 59
+  iteration number: 4
+Sg = [ 0.60476]
+p = [ 1.08466]
+time step: 60
+  iteration number: 4
+Sg = [ 0.59805]
+p = [ 1.06981]
+time step: 61
+  iteration number: 4
+Sg = [ 0.59135]
+p = [ 1.05549]
+time step: 62
+  iteration number: 4
+Sg = [ 0.58464]
+p = [ 1.04166]
+time step: 63
+  iteration number: 4
+Sg = [ 0.57794]
+p = [ 1.0283]
+time step: 64
+  iteration number: 4
+Sg = [ 0.57123]
+p = [ 1.01539]
+time step: 65
+  iteration number: 3
+Sg = [ 0.56453]
+p = [ 1.00291]
+time step: 66
+  iteration number: 3
+Sg = [ 0.55782]
+p = [ 0.99083]
+time step: 67
+  iteration number: 3
+Sg = [ 0.55111]
+p = [ 0.97913]
+time step: 68
+  iteration number: 3
+Sg = [ 0.54441]
+p = [ 0.96781]
+time step: 69
+  iteration number: 3
+Sg = [ 0.5377]
+p = [ 0.95683]
+time step: 70
+  iteration number: 3
+Sg = [ 0.53099]
+p = [ 0.94619]
+time step: 71
+  iteration number: 3
+Sg = [ 0.52429]
+p = [ 0.93587]
+time step: 72
+  iteration number: 3
+Sg = [ 0.51758]
+p = [ 0.92585]
+time step: 73
+  iteration number: 3
+Sg = [ 0.51087]
+p = [ 0.91613]
+time step: 74
+  iteration number: 3
+Sg = [ 0.50416]
+p = [ 0.90668]
+time step: 75
+  iteration number: 3
+Sg = [ 0.49745]
+p = [ 0.8975]
+time step: 76
+  iteration number: 3
+Sg = [ 0.49075]
+p = [ 0.88858]
+time step: 77
+  iteration number: 3
+Sg = [ 0.48404]
+p = [ 0.8799]
+time step: 78
+  iteration number: 3
+Sg = [ 0.47733]
+p = [ 0.87146]
+time step: 79
+  iteration number: 3
+Sg = [ 0.47062]
+p = [ 0.86324]
+time step: 80
+  iteration number: 3
+Sg = [ 0.46391]
+p = [ 0.85524]
+time step: 81
+  iteration number: 3
+Sg = [ 0.4572]
+p = [ 0.84745]
+time step: 82
+  iteration number: 3
+Sg = [ 0.45049]
+p = [ 0.83987]
+time step: 83
+  iteration number: 3
+Sg = [ 0.44378]
+p = [ 0.83247]
+time step: 84
+  iteration number: 3
+Sg = [ 0.43707]
+p = [ 0.82526]
+time step: 85
+  iteration number: 3
+Sg = [ 0.43036]
+p = [ 0.81822]
+time step: 86
+  iteration number: 3
+Sg = [ 0.42365]
+p = [ 0.81136]
+time step: 87
+  iteration number: 3
+Sg = [ 0.41694]
+p = [ 0.80467]
+time step: 88
+  iteration number: 3
+Sg = [ 0.41023]
+p = [ 0.79814]
+time step: 89
+  iteration number: 3
+Sg = [ 0.40352]
+p = [ 0.79176]
+time step: 90
+  iteration number: 3
+Sg = [ 0.39681]
+p = [ 0.78552]
+time step: 91
+  iteration number: 3
+Sg = [ 0.3901]
+p = [ 0.77944]
+time step: 92
+  iteration number: 3
+Sg = [ 0.38339]
+p = [ 0.77349]
+time step: 93
+  iteration number: 3
+Sg = [ 0.37668]
+p = [ 0.76767]
+time step: 94
+  iteration number: 3
+Sg = [ 0.36997]
+p = [ 0.76199]
+time step: 95
+  iteration number: 3
+Sg = [ 0.36326]
+p = [ 0.75643]
+time step: 96
+  iteration number: 3
+Sg = [ 0.35654]
+p = [ 0.75099]
+time step: 97
+  iteration number: 3
+Sg = [ 0.34983]
+p = [ 0.74567]
+time step: 98
+  iteration number: 3
+Sg = [ 0.34312]
+p = [ 0.74046]
+time step: 99
+  iteration number: 3
+Sg = [ 0.33641]
+p = [ 0.73536]
+time step: 100
+  iteration number: 3
+Sg = [ 0.3297]
+p = [ 0.73037]

@@ -6,26 +6,28 @@ import Reservoir
 import Fluid
 from Simulator import *
 
-n = 2;
+n = 1;
 nv = 2;
 # geological settings
-poreVol = [100.0 for i in range(n)];
-perm = [2.0 for i in range(n)];
-deltax = 10.0;
+poreVol = [1000.0 for i in range(n)];
+perm = [0.2 for i in range(n)];
+deltax = 100.0;
 Area = 10.0;
 reservoir = Reservoir.Reservoir(n, poreVol, perm, deltax, Area);
 # initial distribution
-p0 = [500 for i in range(n)];  p0[0] = 500;
+p0 = [500 for i in range(n)];  p0[0] = 200;
 Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
-qT = -7.0; pWater = 600; pInj = 600;                # water injection
+Wellnum = 0; qT = -5.0; pWater = .2563; pInj = 300;            # water injection
 rhoB = reservoir.getFluid().waterDensity(pInj);
 HB = reservoir.getFluid().waterEnthalpy(pWater);
+"""
 print 'Water Injection:', qT, 'ft^3/h'
 print rhoB, 'lbm/ft^3 (', pWater, 'psi)'
 print HB, 'Btu/lbm (', pInj, 'psi)\n'
+"""
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 10.0;                           # time step
+dt = 1;                           # time step
 
 np.set_printoptions(precision=5);
 
@@ -36,19 +38,21 @@ AxGridblock = fig.add_subplot(411, sharex=AxSaturation)
 AxPressure = fig.add_subplot(413, sharex=AxSaturation)
 AxTemperature = fig.add_subplot(414, sharex=AxSaturation)
 
-for timestep in range(201):
+for timestep in range(101):
     print 'time step:', timestep
     # Prototype for Newton iteration
     for iter in range(100):
         #print 'iter =', iter
-        T, TH = reservoir.Transmissibility(0, 1, x)
+        #T, TH = reservoir.Transmissibility(0, 1, x)
 
         RHS = GenerateRHS(reservoir, dt, x, x0);
-        RHS = BoundaryCond_Rate(reservoir, RHS, qT, pWater, pInj);
+        #RHS = BoundaryCond_Rate(reservoir, RHS, qT, pWater, pInj, Wellnum);
+        A = GenerateJacobian(reservoir, dt, x);
+        A, RHS = BoundaryCond_Pres(reservoir, A, RHS, pWater, pInj,\
+                 x[reservoir.Size()+Wellnum], Wellnum);
         if np.linalg.norm(RHS) < 1e-3:
             print '  iteration number:', iter
             break;
-        A = GenerateJacobian(reservoir, dt, x);
         #print A
         #print RHS
         dx = np.linalg.solve(A, RHS);
@@ -58,21 +62,22 @@ for timestep in range(201):
 
         #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
-        if timestep == 1:
+        if timestep == 0:
             print 'iter =', iter
-            J = qT*rhoB*dt/poreVol[0]/(pInj-x[2]); JH = J*HB;
-            print 'injectivity =', J, JH
-            print 'Transmissibility =', T, TH
-            print 'Dp =', x[2] - x[3]
+            #J = -qT*rhoB*dt/poreVol[0]/(pInj-x[n]); JH = J*HB;
+            #J = np.sum(T)*dt/poreVol[0]; JH = J*HB;
+            #print 'injectivity =', J, JH
+            #print 'Transmissibility =', T, TH
+            #print 'Dp =', x[2] - x[3]
             print 'Jacobian ='
-            print np.array([[A[0][0], A[0][2]],[A[2][0], A[2][2]]])
-            print 'RHS =', np.array([RHS[0], RHS[2]])
+            print A #np.array([[A[0][0], A[0][2]],[A[2][0], A[2][2]]])
+            print 'RHS =', RHS #np.array([RHS[0], RHS[2]])
             dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
-            print 'comp =', comp[0][0]
-            print 'Rebar =', Rebar[0]
-            print 'dx =', np.array([dx[0], dx[2]])
+            print 'comp =', comp
+            print 'Rebar =', Rebar
+            print 'dx =', dx #np.array([dx[0], dx[2]])
             #print 'new dx =', dx
-            print 'x =', np.array([x[0], x[2]])
+            print 'x =', x #np.array([x[0], x[2]])
 
     if timestep == -1:
         print x0
