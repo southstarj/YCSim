@@ -10,7 +10,7 @@ n = 1;
 nv = 2;
 # geological settings
 poreVol = [1000.0 for i in range(n)];
-perm = [0.2 for i in range(n)];
+perm = [0.5 for i in range(n)];
 deltax = 100.0;
 Area = 10.0;
 reservoir = Reservoir.Reservoir(n, poreVol, perm, deltax, Area);
@@ -20,6 +20,10 @@ Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
 Wellnum = 0; qT = -5.0; pWater = .2563; pInj = 300;            # water injection
 rhoB = reservoir.getFluid().waterDensity(pInj);
 HB = reservoir.getFluid().waterEnthalpy(pWater);
+muB = reservoir.getFluid().waterViscosity(pWater);
+J = reservoir.Permeability(Wellnum)*reservoir.GetSectionA()\
+    /(reservoir.Deltax(Wellnum)*muB);
+print 'Injectivity =', J*rhoB, J*rhoB*HB
 """
 print 'Water Injection:', qT, 'ft^3/h'
 print rhoB, 'lbm/ft^3 (', pWater, 'psi)'
@@ -62,7 +66,7 @@ for timestep in range(101):
 
         #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
-        if timestep == 0:
+        if timestep == 59:
             print 'iter =', iter
             #J = -qT*rhoB*dt/poreVol[0]/(pInj-x[n]); JH = J*HB;
             #J = np.sum(T)*dt/poreVol[0]; JH = J*HB;
@@ -79,7 +83,7 @@ for timestep in range(101):
             #print 'new dx =', dx
             print 'x =', x #np.array([x[0], x[2]])
 
-    if timestep == -1:
+    if timestep == 59:
         print x0
         #print dx
         print x
