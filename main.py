@@ -6,7 +6,7 @@ import Reservoir
 import Fluid
 from Simulator import *
 
-n = 10;
+n = 2;
 nv = 2;
 # geological settings
 poreVol = [100.0 for i in range(n)];
@@ -17,9 +17,12 @@ reservoir = Reservoir.Reservoir(n, poreVol, perm, deltax, Area);
 # initial distribution
 p0 = [500 for i in range(n)];  p0[0] = 500;
 Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
-qT = -1.0; pWater = 600; pInj = 600;                # water injection
+qT = -7.0; pWater = 600; pInj = 600;                # water injection
 rhoB = reservoir.getFluid().waterDensity(pInj);
 HB = reservoir.getFluid().waterEnthalpy(pWater);
+print 'Water Injection:', qT, 'ft^3/h'
+print rhoB, 'lbm/ft^3 (', pWater, 'psi)'
+print HB, 'Btu/lbm (', pInj, 'psi)\n'
 x0 = np.array(Sg0 + p0);
 x = x0;
 dt = 10.0;                           # time step
@@ -55,7 +58,7 @@ for timestep in range(201):
 
         #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
-        if timestep == -1:
+        if timestep == 1:
             print 'iter =', iter
             J = qT*rhoB*dt/poreVol[0]/(pInj-x[2]); JH = J*HB;
             print 'injectivity =', J, JH
@@ -90,9 +93,9 @@ for timestep in range(201):
         break;
     
     if timestep%20 == 0:
-        AxSaturation.plot(Sg)
-        AxPressure.plot(p)
-        AxTemperature.plot(Tb)
+        AxSaturation.plot(Sg, ':o')
+        AxPressure.plot(p, ':o')
+        AxTemperature.plot(Tb, ':o')
         Legend.append('t = ' + str(timestep+1))
 
 AxSaturation.grid(True)
@@ -105,6 +108,29 @@ AxTemperature.set_xlabel('Grid block')
 AxTemperature.legend(Legend, fontsize = 8)
 AxGridblock.set_yticks([])
 AxGridblock.grid(True)
+"""
+AxGridblock.annotate('$q_T,\;p_{inj},\;H_{w,inj}$',
+            xy=(0, 0.5), xycoords='data',
+            xytext=(-1, 0.5), textcoords='data',
+            bbox=dict(boxstyle="round", fc="0.8"),
+            arrowprops=dict(arrowstyle="->")
+           )
+
+AxGridblock.annotate('$p_{prod}$',
+            xy=(9, 0.5), xycoords='data',
+            xytext=(8.5, 0.5), textcoords='data',
+            bbox=dict(boxstyle="round", fc="0.8"),
+            arrowprops=dict(arrowstyle="->")
+           )
+
+AxGridblock.annotate('$A,\Delta x$', xy=(3.5, 0.5), xycoords='data',
+            bbox=dict(boxstyle="round", fc="0.8"),
+           )
+
+AxGridblock.annotate('$k, V_p$', xy=(4.5, 0.5), xycoords='data',
+            bbox=dict(boxstyle="round", fc="0.8"),
+           )
+"""
 AxGridblock.set_xbound(0, 9)
 
 #plt.show()

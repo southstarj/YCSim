@@ -1,0 +1,85 @@
+Water Injection: -1.0 ft^3/h
+49.6770988574 lbm/ft^3 ( 600 psi)
+471.7 Btu/lbm ( 600 psi)
+
+time step: 0
+  iteration number: 3
+Sg = [ 0.90486  1.     ]
+p = [ 500.02357  500.     ]
+time step: 1
+  iteration number: 2
+Sg = [ 0.80981  1.     ]
+p = [ 500.02633  500.     ]
+time step: 2
+  iteration number: 2
+Sg = [ 0.71489  1.     ]
+p = [ 500.0298  500.    ]
+time step: 3
+  iteration number: 3
+Sg = [ 0.62013  1.     ]
+p = [ 500.03433  500.     ]
+time step: 4
+  iteration number: 3
+Sg = [ 0.52559  1.     ]
+p = [ 500.04046  500.     ]
+time step: 5
+  iteration number: 3
+Sg = [ 0.43137  1.     ]
+p = [ 500.04923  500.     ]
+time step: 6
+  iteration number: 3
+Sg = [ 0.33763  1.     ]
+p = [ 500.06274  500.     ]
+time step: 7
+  iteration number: 3
+Sg = [ 0.24473  1.     ]
+p = [ 500.08619  500.     ]
+time step: 8
+  iteration number: 3
+Sg = [ 0.15361  1.     ]
+p = [ 500.13601  500.     ]
+time step: 9
+  iteration number: 4
+Sg = [ 0.06822  1.     ]
+p = [ 500.29631  500.     ]
+time step: 10
+  iteration number: 6
+Sg = [ 0.01396  1.     ]
+p = [ 501.16945  500.     ]
+time step: 11
+  iteration number: 4
+Sg = [ 0.00472  1.     ]
+p = [ 502.42309  500.     ]
+time step: 12
+  iteration number: 3
+Sg = [ 0.00448  1.     ]
+p = [ 502.65953  500.     ]
+time step: 13
+  iteration number: 2
+Sg = [ 0.00457  1.     ]
+p = [ 502.66592  500.     ]
+time step: 14
+  iteration number: 2
+Sg = [ 0.00458  1.     ]
+p = [ 502.66359  500.     ]
+time step: 15
+  iteration number: 1
+Sg = [ 0.00458  1.     ]
+p = [ 502.6633  500.    ]
+time step: 16
+  iteration number: 1
+Sg = [ 0.00458  1.     ]
+p = [ 502.6633  500.    ]
+time step: 17
+  iteration number: 1
+Sg = [ 0.00458  1.     ]
+p = [ 502.66331  500.     ]
+time step: 18
+  iteration number: 1
+Sg = [ 0.00458  1.     ]
+p = [ 502.66331  500.     ]
+time step: 19
+  iteration number: 0
+Sg = [ 0.00458  1.     ]
+p = [ 502.66331  500.     ]
+Steady State
