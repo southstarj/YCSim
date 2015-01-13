@@ -8,6 +8,7 @@ from Simulator import *
 
 n = 1;
 nv = 2;
+debugstep = -1;
 # geological settings
 poreVol = [1000.0 for i in range(n)];
 perm = [0.5 for i in range(n)];
@@ -50,10 +51,10 @@ for timestep in range(101):
         #T, TH = reservoir.Transmissibility(0, 1, x)
 
         RHS = GenerateRHS(reservoir, dt, x, x0);
-        #RHS = BoundaryCond_Rate(reservoir, RHS, qT, pWater, pInj, Wellnum);
         A = GenerateJacobian(reservoir, dt, x);
-        A, RHS = BoundaryCond_Pres(reservoir, A, RHS, pWater, pInj,\
-                 x[reservoir.Size()+Wellnum], Wellnum);
+        RHS = BoundaryCond_Rate(reservoir, RHS, qT, pWater, pInj, Wellnum);
+        #A, RHS = BoundaryCond_Pres(reservoir, A, RHS, pWater, pInj,\
+        #         x[reservoir.Size()+Wellnum], Wellnum);
         if np.linalg.norm(RHS) < 1e-3:
             print '  iteration number:', iter
             break;
@@ -66,7 +67,7 @@ for timestep in range(101):
 
         #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
-        if timestep == 59:
+        if timestep == debugstep:
             print 'iter =', iter
             #J = -qT*rhoB*dt/poreVol[0]/(pInj-x[n]); JH = J*HB;
             #J = np.sum(T)*dt/poreVol[0]; JH = J*HB;
@@ -83,7 +84,7 @@ for timestep in range(101):
             #print 'new dx =', dx
             print 'x =', x #np.array([x[0], x[2]])
 
-    if timestep == 59:
+    if timestep == debugstep:
         print x0
         #print dx
         print x
