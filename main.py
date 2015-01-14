@@ -8,6 +8,7 @@ from Simulator import *
 
 n = 1;
 nv = 2;
+debugstep = 1;
 # geological settings
 poreVol = [1000.0 for i in range(n)];
 perm = [0.5 for i in range(n)];
@@ -31,17 +32,21 @@ print HB, 'Btu/lbm (', pInj, 'psi)\n'
 """
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 1;                           # time step
+dt = 2;                           # time step
 
 np.set_printoptions(precision=5);
 
-Legend = [];
+#Legend = [];
+"""
 fig = plt.figure(figsize=(16, 9), dpi = 80);
 AxSaturation = fig.add_subplot(412)
 AxGridblock = fig.add_subplot(411, sharex=AxSaturation)
 AxPressure = fig.add_subplot(413, sharex=AxSaturation)
 AxTemperature = fig.add_subplot(414, sharex=AxSaturation)
-
+"""
+tt = [];
+pt = [];
+Sgt = [];
 for timestep in range(101):
     print 'time step:', timestep
     # Prototype for Newton iteration
@@ -66,7 +71,7 @@ for timestep in range(101):
 
         #dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
         x = x + dx;
-        if timestep == 59:
+        if timestep == debugstep:
             print 'iter =', iter
             #J = -qT*rhoB*dt/poreVol[0]/(pInj-x[n]); JH = J*HB;
             #J = np.sum(T)*dt/poreVol[0]; JH = J*HB;
@@ -83,7 +88,7 @@ for timestep in range(101):
             #print 'new dx =', dx
             print 'x =', x #np.array([x[0], x[2]])
 
-    if timestep == 59:
+    if timestep == debugstep:
         print x0
         #print dx
         print x
@@ -93,6 +98,9 @@ for timestep in range(101):
     Tb = reservoir.getFluid().boilingPoint(p);
     print 'Sg =', Sg
     print 'p =', p
+    tt.append(timestep);
+    pt.append(p);
+    Sgt.append(Sg);
     x0 = x;
     if iter == 0:
         print 'Steady State'
@@ -100,13 +108,14 @@ for timestep in range(101):
     if iter == 99:
         print 'Not Converge'
         break;
-    
+    """
     if timestep%20 == 0:
         AxSaturation.plot(Sg, ':o')
         AxPressure.plot(p, ':o')
         AxTemperature.plot(Tb, ':o')
         Legend.append('t = ' + str(timestep+1))
-
+    """
+"""
 AxSaturation.grid(True)
 AxSaturation.set_ylabel('Sg')
 AxPressure.grid(True)
@@ -117,6 +126,7 @@ AxTemperature.set_xlabel('Grid block')
 AxTemperature.legend(Legend, fontsize = 8)
 AxGridblock.set_yticks([])
 AxGridblock.grid(True)
+"""
 """
 AxGridblock.annotate('$q_T,\;p_{inj},\;H_{w,inj}$',
             xy=(0, 0.5), xycoords='data',
@@ -140,6 +150,17 @@ AxGridblock.annotate('$k, V_p$', xy=(4.5, 0.5), xycoords='data',
             bbox=dict(boxstyle="round", fc="0.8"),
            )
 """
-AxGridblock.set_xbound(0, 9)
+#AxGridblock.set_xbound(0, 9)
+
+fig = plt.figure();
+plt.title('Injectivity = '+str(J*rhoB/1000*dt)+' '+str(J*rhoB*HB/1000*dt));
+AxPressure = fig.add_subplot(211);
+AxSaturation = fig.add_subplot(212);
+AxPressure.plot(pt)
+AxSaturation.plot(Sgt)
+AxSaturation.grid(True)
+AxSaturation.set_ylabel('Sg')
+AxPressure.grid(True)
+AxPressure.set_ylabel('p(psi)')
 
 #plt.show()
