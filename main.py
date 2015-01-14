@@ -8,7 +8,7 @@ from Simulator import *
 
 n = 1;
 nv = 2;
-debugstep = 1;
+debugstep = -1;
 # geological settings
 poreVol = [1000.0 for i in range(n)];
 perm = [0.5 for i in range(n)];
@@ -32,7 +32,7 @@ print HB, 'Btu/lbm (', pInj, 'psi)\n'
 """
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 2;                           # time step
+dt = 4;                           # time step
 
 np.set_printoptions(precision=5);
 
@@ -99,8 +99,8 @@ for timestep in range(101):
     print 'Sg =', Sg
     print 'p =', p
     tt.append(timestep);
-    pt.append(p);
-    Sgt.append(Sg);
+    pt.append(p[0]);
+    Sgt.append(Sg[0]);
     x0 = x;
     if iter == 0:
         print 'Steady State'
@@ -153,8 +153,9 @@ AxGridblock.annotate('$k, V_p$', xy=(4.5, 0.5), xycoords='data',
 #AxGridblock.set_xbound(0, 9)
 
 fig = plt.figure();
-plt.title('Injectivity = '+str(J*rhoB/1000*dt)+' '+str(J*rhoB*HB/1000*dt));
 AxPressure = fig.add_subplot(211);
+#plt.title('$q_T='+str(-qT)+'ft^3/d\;H_{w,inj}=262.25btu/lbm(60psi)$')
+plt.title('Injectivity = '+str(J*rhoB/1000*dt)+' '+str(J*rhoB*HB/1000*dt));
 AxSaturation = fig.add_subplot(212);
 AxPressure.plot(pt)
 AxSaturation.plot(Sgt)
@@ -162,5 +163,6 @@ AxSaturation.grid(True)
 AxSaturation.set_ylabel('Sg')
 AxPressure.grid(True)
 AxPressure.set_ylabel('p(psi)')
+#AxPressure.set_ybound(480, 500)
 
-#plt.show()
+plt.show()
