@@ -32,7 +32,7 @@ print HB, 'Btu/lbm (', pInj, 'psi)\n'
 """
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 4;                           # time step
+dt = 1;                           # time step
 
 np.set_printoptions(precision=5);
 
