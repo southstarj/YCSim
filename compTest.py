@@ -38,7 +38,7 @@ def compressibility_Test(reservoir, p, Sg, Hw):
     Uw = steam.waterIntEnergy(p);
     #print '  rho, U =', rhog, rhow, Ug, Uw;
     beta = (rhog*Ug - rhow*Uw)/(rhog-rhow);
-    print '  beta =', beta;
+    #print '  beta =', beta;
     drhow = steam.diffProp(steam.waterDensity, p);
     drhog = steam.diffProp(steam.steamDensity, p);
     dUw = steam.diffProp(steam.waterIntEnergy, p);
@@ -49,21 +49,25 @@ def compressibility_Test(reservoir, p, Sg, Hw):
     alpha1 = (beta - Hw);
     alpha2 = (beta*(Sw*drhow+Sg*drhog)-(Sw*drhoUw+Sg*drhoUg));
     print '  alpha =', alpha1/alpha2;
-    return alpha1/alpha2;
+    return alpha1/alpha2, beta;
 
-print 'Hw =', HB
-Sg0 = 0.9
-ps = np.array(range(20,100))#[60, 100, 150, 200, 250, 290, 295, 300]);
-alpha = compressibility_Test(reservoir, ps, Sg0, HB);
+#print 'Hw =', HB
+Sg0 = 0.1
+ps = np.array([300]) #np.array(range(1,300))#[60, 100, 150, 200, 250, 290, 295, 300]);
+pwaters = np.array(range(0, 300, 5));
+HB = reservoir.getFluid().waterEnthalpy(pwaters);
+
+alpha, beta = compressibility_Test(reservoir, ps, Sg0, HB);
 
 a22bar = np.array([]);
-for p in ps:
+p = 300;
+for pw in pwaters:
     x = np.array([Sg0, p]);
     x0 = x;
     RHS = GenerateRHS(reservoir, dt, x, x0);
     #RHS = BoundaryCond_Rate(reservoir, RHS, qT, pWater, pInj, Wellnum);
     A = GenerateJacobian(reservoir, dt, x);
-    A, RHS = BoundaryCond_Pres(reservoir, A, RHS, pWater, pInj,\
+    A, RHS = BoundaryCond_Pres(reservoir, A, RHS, pw, pInj,\
              x[reservoir.Size()+Wellnum], Wellnum);
     dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
     
@@ -81,12 +85,15 @@ for p in ps:
     print '  Rebar =', Rebar
     """
 
-print 'a22bar =', a22bar
+#print 'a22bar =', a22bar
 fig = plt.figure(figsize=(16, 9), dpi = 80);
-Axalpha = fig.add_subplot(211)
+#Axbeta = fig.add_subplot(311)
+Axalpha = fig.add_subplot(211)#, sharex=Axbeta)
 Axcomp = fig.add_subplot(212, sharex=Axalpha)
-Axalpha.plot(ps, alpha)
+#Axbeta.plot(Hws, beta)
+#Axbeta.grid(True)
+Axalpha.plot(HB, alpha)
 Axalpha.grid(True)
-Axcomp.plot(ps, a22bar)
+Axcomp.plot(HB, a22bar)
 Axcomp.grid(True)
 plt.show()
