@@ -16,7 +16,7 @@ deltax = 100.0;
 Area = 10.0;
 reservoir = Reservoir.Reservoir(n, poreVol, perm, deltax, Area);
 # initial distribution
-p0 = [500 for i in range(n)];  p0[0] = 200;
+p0 = [500 for i in range(n)];  p0[0] = 299;
 Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
 Wellnum = 0; qT = -5.0; pWater = .2563; pInj = 300;            # water injection
 rhoB = reservoir.getFluid().waterDensity(pInj);

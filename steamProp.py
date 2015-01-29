@@ -41,7 +41,7 @@ class steamProp:
 
     def diffProp(self, propFunc, p):
     # Numerical property function differentiation
-        dp = 1;
+        dp = 0.1;
         if type(p) is list:
             _value = [];
             for i in range(len(p)):

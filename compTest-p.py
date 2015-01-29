@@ -18,7 +18,7 @@ reservoir = Reservoir.Reservoir(n, poreVol, perm, deltax, Area);
 # initial distribution
 p0 = [500 for i in range(n)];  p0[0] = 300;
 Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
-Wellnum = 0; qT = -5.0; pWater = .2563; pInj = 300;          # water injection
+Wellnum = 0; qT = -5.0; pWater = 1; pInj = 300;          # water injection
 
 rhoB = reservoir.getFluid().waterDensity(pInj);
 HB = reservoir.getFluid().waterEnthalpy(pWater);
@@ -52,26 +52,27 @@ def compressibility_Test(reservoir, p, Sg, Hw):
     return alpha1/alpha2, beta;
 
 #print 'Hw =', HB
-Sg0 = 0.1
-ps = np.array([300]) #np.array(range(1,300))#[60, 100, 150, 200, 250, 290, 295, 300]);
-pwaters = np.array(range(0, 300, 5));
+Sg0 = 1.0
+ps = np.array(range(1,299))#[60, 100, 150, 200, 250, 290, 295, 300]);
+pwaters = np.array([pWater]);
 HB = reservoir.getFluid().waterEnthalpy(pwaters);
 
 alpha, beta = compressibility_Test(reservoir, ps, Sg0, HB);
 
-a22bar = np.array([]);
-p = 300;
-for pw in pwaters:
+lincomp = np.array([]); dp = np.array([]);
+#p = 300;
+for p in ps:
     x = np.array([Sg0, p]);
     x0 = x;
     RHS = GenerateRHS(reservoir, dt, x, x0);
     #RHS = BoundaryCond_Rate(reservoir, RHS, qT, pWater, pInj, Wellnum);
     A = GenerateJacobian(reservoir, dt, x);
-    A, RHS = BoundaryCond_Pres(reservoir, A, RHS, pw, pInj,\
+    A, RHS = BoundaryCond_Pres(reservoir, A, RHS, pwaters, pInj,\
              x[reservoir.Size()+Wellnum], Wellnum);
-    dx, comp, Rebar = LinearSolver(reservoir, dt, A, RHS);
+    dx, a22bar, Rebar = LinearSolver(reservoir, dt, A, RHS);
     
-    a22bar = np.append(a22bar, comp);
+    lincomp = np.append(lincomp, -Rebar/(a22bar*T*(pInj-p)));
+    dp = np.append(dp, p-Rebar/(a22bar));
     
     """
     print 'p =', p
@@ -86,14 +87,20 @@ for pw in pwaters:
     """
 
 #print 'a22bar =', a22bar
-fig = plt.figure(figsize=(16, 9), dpi = 80);
-#Axbeta = fig.add_subplot(311)
-Axalpha = fig.add_subplot(211)#, sharex=Axbeta)
-Axcomp = fig.add_subplot(212, sharex=Axalpha)
-#Axbeta.plot(Hws, beta)
-#Axbeta.grid(True)
-Axalpha.plot(HB, alpha)
+fig = plt.figure()#figsize=(16, 9), dpi = 80);
+Axbeta = fig.add_subplot(311)
+plt.title('$S_g = '+str(Sg0)+', \; H_w^0 = 28.08Btu/lbm(60F^o)$')
+Axalpha = fig.add_subplot(312)#, sharex=Axbeta)
+Axcomp = fig.add_subplot(313, sharex=Axalpha)
+p1, = Axbeta.plot(ps, beta)
+Axbeta.grid(True)
+Axbeta.legend([p1], ['$\\beta$'], loc=4)
+p1, = Axalpha.plot(ps, alpha)
+p2, = Axalpha.plot(ps, dp)
 Axalpha.grid(True)
-Axcomp.plot(HB, a22bar)
+#Axalpha.set_ylim((-300, 300))
+Axalpha.legend([p1,p2],['$\\alpha$', '$p+\\delta p$'], loc=7)
+p1, = Axcomp.plot(ps, lincomp)
 Axcomp.grid(True)
+Axcomp.legend([p1],['$\\hat{\\alpha}$'])
 plt.show()
