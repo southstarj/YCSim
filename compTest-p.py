@@ -23,8 +23,8 @@ Wellnum = 0; qT = -5.0; pWater = 1; pInj = 300;          # water injection
 rhoB = reservoir.getFluid().waterDensity(pInj);
 HB = reservoir.getFluid().waterEnthalpy(pWater);
 muB = reservoir.getFluid().waterViscosity(pWater);
-T = reservoir.Permeability(Wellnum)*reservoir.GetSectionA()\
-    /(reservoir.Deltax(Wellnum)*muB);
+T = rhoB*reservoir.Permeability(Wellnum)*reservoir.GetSectionA()\
+    /(reservoir.Deltax(Wellnum)*muB*reservoir.PoreVolume(Wellnum));
 
 dt = 1;                           # time step
 
@@ -48,11 +48,11 @@ def compressibility_Test(reservoir, p, Sg, Hw):
     Sw = 1-Sg;
     alpha1 = (beta - Hw);
     alpha2 = (beta*(Sw*drhow+Sg*drhog)-(Sw*drhoUw+Sg*drhoUg));
-    print '  alpha =', alpha1/alpha2;
+    #print '  alpha =', alpha1/alpha2;
     return alpha1/alpha2, beta;
 
 #print 'Hw =', HB
-Sg0 = 1.0
+Sg0 = 0.4
 ps = np.array(range(1,299))#[60, 100, 150, 200, 250, 290, 295, 300]);
 pwaters = np.array([pWater]);
 HB = reservoir.getFluid().waterEnthalpy(pwaters);
@@ -89,18 +89,19 @@ for p in ps:
 #print 'a22bar =', a22bar
 fig = plt.figure()#figsize=(16, 9), dpi = 80);
 Axbeta = fig.add_subplot(311)
-plt.title('$S_g = '+str(Sg0)+', \; H_w^0 = 28.08Btu/lbm(60F^o)$')
+plt.title('$S_g = '+str(Sg0)+'\\; H_w^0 = 28.08Btu/lbm(60F^o)\\;J='+str(T)+'$')
 Axalpha = fig.add_subplot(312)#, sharex=Axbeta)
 Axcomp = fig.add_subplot(313, sharex=Axalpha)
 p1, = Axbeta.plot(ps, beta)
 Axbeta.grid(True)
-Axbeta.legend([p1], ['$\\beta$'], loc=4)
+#Axbeta.legend([p1], ['$\\beta$'], loc=4)
 p1, = Axalpha.plot(ps, alpha)
 p2, = Axalpha.plot(ps, dp)
 Axalpha.grid(True)
 #Axalpha.set_ylim((-300, 300))
-Axalpha.legend([p1,p2],['$\\alpha$', '$p+\\delta p$'], loc=7)
+#Axalpha.legend([p1,p2],['$\\alpha$', '$p+\\delta p$'], loc=7)
 p1, = Axcomp.plot(ps, lincomp)
+#p2, = Axcomp.plot(ps, alpha/(alpha*T+1))
 Axcomp.grid(True)
-Axcomp.legend([p1],['$\\hat{\\alpha}$'])
+#Axcomp.legend([p1],['$\\hat{\\alpha}$'])
 plt.show()

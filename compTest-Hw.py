@@ -23,8 +23,8 @@ Wellnum = 0; qT = -5.0; pWater = .2563; pInj = 300;          # water injection
 rhoB = reservoir.getFluid().waterDensity(pInj);
 HB = reservoir.getFluid().waterEnthalpy(pWater);
 muB = reservoir.getFluid().waterViscosity(pWater);
-T = reservoir.Permeability(Wellnum)*reservoir.GetSectionA()\
-    /(reservoir.Deltax(Wellnum)*muB);
+T = rhoB*reservoir.Permeability(Wellnum)*reservoir.GetSectionA()\
+    /(reservoir.Deltax(Wellnum)*muB*reservoir.PoreVolume(Wellnum));
 
 dt = 1;                           # time step
 
@@ -38,7 +38,7 @@ def compressibility_Test(reservoir, p, Sg, Hw):
     Uw = steam.waterIntEnergy(p);
     #print '  rho, U =', rhog, rhow, Ug, Uw;
     beta = (rhog*Ug - rhow*Uw)/(rhog-rhow);
-    #print '  beta =', beta;
+    print '  beta =', beta;
     drhow = steam.diffProp(steam.waterDensity, p);
     drhog = steam.diffProp(steam.steamDensity, p);
     dUw = steam.diffProp(steam.waterIntEnergy, p);
@@ -49,15 +49,26 @@ def compressibility_Test(reservoir, p, Sg, Hw):
     alpha1 = (beta - Hw);
     alpha2 = (beta*(Sw*drhow+Sg*drhog)-(Sw*drhoUw+Sg*drhoUg));
     #print '  alpha =', alpha1/alpha2;
-    return alpha1/alpha2, beta;
+    return alpha1/alpha2, beta, alpha1, alpha2;
 
 #print 'Hw =', HB
 Sg0 = 1.0
-ps = np.array([299])#[60, 100, 150, 200, 250, 290, 295, 300]);
+ps = np.array([250])#[60, 100, 150, 200, 250, 290, 295, 300]);
 pwaters = np.array(range(0,300));
 HB = reservoir.getFluid().waterEnthalpy(pwaters);
 
-alpha, beta = compressibility_Test(reservoir, ps, Sg0, HB);
+alpha, beta, alpha1, alpha2 = compressibility_Test(reservoir, ps, Sg0, HB);
+"""
+fig = plt.figure()
+Axalpha1 = fig.add_subplot(311)
+Axalpha2 = fig.add_subplot(312, sharex=Axalpha1)
+Axalpha = fig.add_subplot(313, sharex=Axalpha2)
+Axalpha1.plot(HB, alpha1)
+print 'alpha2 =',alpha2
+#Axalpha.plot(HB, alpha1/alpha2)
+plt.plot(HB, alpha1/alpha2)
+plt.show()
+"""
 
 lincomp = np.array([]); dp = np.array([]);
 p = ps[0];
@@ -89,7 +100,7 @@ for pw in pwaters:
 #print 'a22bar =', a22bar
 fig = plt.figure()#figsize=(16, 9), dpi = 80);
 Axdp = fig.add_subplot(311)
-plt.title('$S_g = '+str(Sg0)+', \; p = '+str(p)+'psi$')
+plt.title('$S_g = '+str(Sg0)+'\\;p = '+str(p)+'psi\\;J='+str(T)+'\\;\\beta='+str(beta)+'$')
 Axalpha = fig.add_subplot(312, sharex=Axdp)
 Axcomp = fig.add_subplot(313, sharex=Axalpha)
 p1, = Axdp.plot(HB, dp)
@@ -101,6 +112,7 @@ Axalpha.grid(True)
 #print dp
 #Axalpha.legend([p1],['$\\alpha$'], loc=4)
 p1, = Axcomp.plot(HB, lincomp)
+p2, = Axcomp.plot(HB, alpha/(T*alpha+1))
 Axcomp.grid(True)
 #Axcomp.legend([p1],['$\\hat{\\alpha}$'], loc=4)
 plt.show()
