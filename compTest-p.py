@@ -24,7 +24,7 @@ rhoB = reservoir.getFluid().waterDensity(pInj);
 HB = reservoir.getFluid().waterEnthalpy(pWater);
 muB = reservoir.getFluid().waterViscosity(pWater);
 T = rhoB*reservoir.Permeability(Wellnum)*reservoir.GetSectionA()\
-    /(reservoir.Deltax(Wellnum)*muB*reservoir.PoreVolume(Wellnum));
+    /(reservoir.Deltax(Wellnum)*muB);
 
 dt = 1;                           # time step
 
@@ -48,16 +48,18 @@ def compressibility_Test(reservoir, p, Sg, Hw):
     Sw = 1-Sg;
     alpha1 = (beta - Hw);
     alpha2 = (beta*(Sw*drhow+Sg*drhog)-(Sw*drhoUw+Sg*drhoUg));
-    #print '  alpha =', alpha1/alpha2;
+    #print '  alpha =', alpha1, alpha2;
     return alpha1/alpha2, beta;
 
 #print 'Hw =', HB
-Sg0 = 0.4
-ps = np.array(range(1,299))#[60, 100, 150, 200, 250, 290, 295, 300]);
-pwaters = np.array([pWater]);
+Sg0 = 1.0
+ps = np.array(range(1, 299))#[60, 100, 150, 200, 250, 290, 295, 300]);
+pwaters = np.array([1]);
 HB = reservoir.getFluid().waterEnthalpy(pwaters);
+print HB
 
 alpha, beta = compressibility_Test(reservoir, ps, Sg0, HB);
+#print alpha, beta
 
 lincomp = np.array([]); dp = np.array([]);
 #p = 300;
@@ -70,21 +72,11 @@ for p in ps:
     A, RHS = BoundaryCond_Pres(reservoir, A, RHS, pwaters, pInj,\
              x[reservoir.Size()+Wellnum], Wellnum);
     dx, a22bar, Rebar = LinearSolver(reservoir, dt, A, RHS);
-    
+
     lincomp = np.append(lincomp, -Rebar/(a22bar*T*(pInj-p)));
     dp = np.append(dp, p-Rebar/(a22bar));
+    #print 'lincomp =', lincomp
     
-    """
-    print 'p =', p
-    compressibility_Test(reservoir, p, 0.1, HB);
-    print '  Injectivity =', T*(pInj - p)/poreVol[0]
-    print '  A ='
-    print A
-    print '  RHS =', RHS
-    print '  dx =', dx[0], dx[1]
-    print '  comp =', comp
-    print '  Rebar =', Rebar
-    """
 
 #print 'a22bar =', a22bar
 fig = plt.figure()#figsize=(16, 9), dpi = 80);
@@ -101,7 +93,7 @@ Axalpha.grid(True)
 #Axalpha.set_ylim((-300, 300))
 #Axalpha.legend([p1,p2],['$\\alpha$', '$p+\\delta p$'], loc=7)
 p1, = Axcomp.plot(ps, lincomp)
-#p2, = Axcomp.plot(ps, alpha/(alpha*T+1))
+p2, = Axcomp.plot(ps, alpha/(alpha*T+1))
 Axcomp.grid(True)
 #Axcomp.legend([p1],['$\\hat{\\alpha}$'])
 plt.show()
