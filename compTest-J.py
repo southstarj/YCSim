@@ -23,19 +23,20 @@ def calcComp(p, Sg):
     
 
 pi = 300;      # inject pressure: psia
-#p0 = 500;      # cell pressure: psia
+p0 = 200;      # cell pressure: psia
 Sg0 = 1.0;     # init saturation
-#Hw = 471.6;   # inject water enthalpy: btu/lb
-J = 0.003;      # normalized injectivity: lb/cf.psi
+Hw = 28.08;   # inject water enthalpy: btu/lb
+#J = 0.003;      # normalized injectivity: lb/cf.psi
 steam = prop.steamProp("saturated_steam.org");
 
-Hw = 28.08;
-pvalues = range(299);
+#Hwvalues = range(400);
+#pvalues = range(299);
+Jvalues = 10**np.linspace(-4, -2, 1000);
 alphaList = np.array([]);
 comp_list = np.array([]);
 dp_list = np.array([]);
 
-for p0 in pvalues:
+for J in Jvalues:
     Sg = Sg0;
     p = p0;
     [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
@@ -74,9 +75,8 @@ for p0 in pvalues:
 
     #print '    ', Sg, p
 
-plt.plot(pvalues, alphaList)
-plt.plot(pvalues, comp_list)
-plt.plot(pvalues, dp_list)
-plt.ylim(-300, 300)
+plt.plot(Jvalues, alphaList)
+plt.plot(Jvalues, comp_list)
+plt.plot(Jvalues, dp_list)
 plt.grid(True)
 plt.show()
