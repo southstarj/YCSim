@@ -78,5 +78,6 @@ for J in Jvalues:
 plt.plot(Jvalues, alphaList)
 plt.plot(Jvalues, comp_list)
 plt.plot(Jvalues, dp_list)
+plt.ylim(-1000,1000)
 plt.grid(True)
 plt.show()
