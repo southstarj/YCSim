@@ -28,7 +28,8 @@ steam = prop.steamProp("saturated_steam.org");
 getcontext().prec = 5;
 
 Hw = 262.09;
-Jvalues = [0.00001, 0.005, 0.007, 0.0073, 0.00738, 0.00875, 0.00881];
+Jvalues = [0.00001, 0.005, 0.007, 0.008, 0.01];
+
 """
 dSg=[]
 dp=[]
@@ -68,15 +69,17 @@ for J in Jvalues:
     Sg = Sg0;
     p = p0;
     [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
-    #Rw0 = rhow*(1-Sg) + rhog*Sg;
-    #Re0 = (rhow*(1-Sg)*Uw + rhog*Sg*Ug);
+    Rw0 = rhow*(1-Sg) + rhog*Sg;
+    Re0 = (rhow*(1-Sg)*Uw + rhog*Sg*Ug);
+    p_vis = [p0,]; Sg_vis = [Sg0,];
+    """
     for iter in range(10):
-        #Rw = (rhow*(1-Sg) + rhog*Sg) - Rw0 - J*(pi-p);
-        #Re = (rhow*(1-Sg)*Uw + rhog*Sg*Ug) - Re0 - J*Hw*(pi-p);
+        Rw = (rhow*(1-Sg) + rhog*Sg) - Rw0 - J*(pi-p);
+        Re = (rhow*(1-Sg)*Uw + rhog*Sg*Ug) - Re0 - J*Hw*(pi-p);
         cw = (1-Sg)*drhow + Sg*drhog
         ce = (1-Sg)*drhoUw + Sg*drhoUg
-        Rw = cw*(p-p0)-J*(pi-p)
-        Re = ce*(p-p0)-J*Hw*(pi-p)
+        #Rw = cw*(p-p0)-J*(pi-p)
+        #Re = ce*(p-p0)-J*Hw*(pi-p)
         RHS = -np.array([Rw, Re]).transpose();
         a11 = rhog-rhow;
         a21 = rhog*Ug-rhow*Uw;
@@ -100,7 +103,7 @@ for J in Jvalues:
               Decimal(p).normalize(),'&',\
               Decimal(Rebar).normalize(),'\\\\'
     """
-    for iter in range(20):
+    for iter in range(10):
         Rw = (rhow*(1-Sg) + rhog*Sg) - Rw0 - J*(pi-p);
         Re = (rhow*(1-Sg)*Uw + rhog*Sg*Ug) - Re0 - J*Hw*(pi-p);
         RHS = -np.array([Rw, Re]).transpose();
@@ -115,13 +118,28 @@ for J in Jvalues:
         x = np.linalg.solve(A, RHS);
         Sg = Sg + x[0];
         p = p + x[1];
+        p_vis.append(p);
+        Sg_vis.append(Sg);
         [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
-    print '    ', Decimal(Sg).normalize(), '&',\
-          Decimal(p).normalize(), '\\\\'
-    """
+        print '    ', Decimal(Sg).normalize(), '&',\
+                      Decimal(p).normalize(), '\\\\'
+    
 
     print '\\end{tabular}\n\\end{table}'
     print '\\newpage'
+    plt.figure(figsize=(16,6))
+    plt.subplot(1, 2, 1)
+    plt.plot(range(11), p_vis)
+    plt.xlabel('Iteration number', fontsize=20)
+    plt.ylabel('Block pressure(psi)', fontsize=20)
+    plt.tick_params(labelsize=16)
+    plt.grid(True)
+    plt.subplot(1, 2, 2)
+    plt.plot(range(11), Sg_vis)
+    plt.xlabel('Iteration number', fontsize=20)
+    plt.ylabel('Steam saturation', fontsize=20)
+    plt.tick_params(labelsize=16)
+    plt.grid(True)
 
 # visualization
 #plt.plot(Jvalues, dSg)
@@ -130,4 +148,4 @@ for J in Jvalues:
 #plt.plot(Jvalues, steamSaturation)
 #plt.plot(Jvalues, pressure)
 #plt.plot(Jvalues, residual)
-#plt.show()
+plt.show()
