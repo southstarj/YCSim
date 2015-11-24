@@ -41,6 +41,9 @@ pressure=[]
 residual=[]
 """
 
+p_conv = []; Sg_conv = [];
+p1 = []; Sg1 = [];
+
 print '\\begin{table}[H]\n\\centering'
 print '\\begin{tabular}{ r r r r r r r r r }'
 print 'J & $\\delta S_g$ & $\\delta p$ & $\\hat{a}_{22}$'
@@ -97,6 +100,7 @@ for J in Jvalues:
     pressure.append(p)
     residual.append(Rebar)
     """
+    p1.append(p); Sg1.append(Sg);
     print J, '&',\
               Decimal(x[0]).normalize(),'&',\
               Decimal(x[1]).normalize(),'&',\
@@ -122,6 +126,7 @@ for J in Jvalues:
         [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
     print '    ', Decimal(Sg).normalize(), '&',\
           Decimal(p).normalize(), '\\\\'
+    p_conv.append(p); Sg_conv.append(Sg);
 
 print '\\end{tabular}\n\\end{table}'
 print '\\newpage'
@@ -133,4 +138,25 @@ print '\\newpage'
 #plt.plot(Jvalues, steamSaturation)
 #plt.plot(Jvalues, pressure)
 #plt.plot(Jvalues, residual)
-#plt.show()
+plt.figure(figsize=(10, 16))
+plt.subplot(2, 1, 1)
+plt.plot(Jvalues, p1, 'o-')
+plt.plot(Jvalues, p_conv, '^-')
+plt.plot([0, 0.03], [0, 0])
+plt.plot([0, 0.03], [500, 500], 'k')
+plt.legend(['First iteration $p$','Converged $p$','$p=0$','Initial $p=500$'], fontsize=16, loc='lower right')
+#plt.xlabel('Injectivity $J$', fontsize=20)
+plt.ylabel('Pressure (psi)', fontsize=20)
+plt.ylim((-400, 1000))
+plt.tick_params(labelsize=16)
+plt.grid(True)
+plt.subplot(2, 1, 2)
+plt.plot(Jvalues, Sg1, 'o-')
+plt.plot(Jvalues, Sg_conv, '^-')
+plt.legend(['First iteration $S_g$','Converged $S_g$'], fontsize=16, loc='lower right')
+plt.xlabel('Injectivity $J$', fontsize=20)
+plt.ylabel('Steam Saturation', fontsize=20)
+plt.ylim((0.0, 1.5))
+plt.tick_params(labelsize=16)
+plt.grid(True)
+plt.show()
