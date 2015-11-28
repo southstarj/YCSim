@@ -22,16 +22,16 @@ def calcComp(p, Sg):
     [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
     
 
-pi = 300;      # inject pressure: psia
-p0 = 200;      # cell pressure: psia
+pi = 600;      # inject pressure: psia
+p0 = 500;      # cell pressure: psia
 Sg0 = 1.0;     # init saturation
-Hw = 28.08;   # inject water enthalpy: btu/lb
+Hw = 262.25;   # inject water enthalpy: btu/lb
 #J = 0.003;      # normalized injectivity: lb/cf.psi
 steam = prop.steamProp("saturated_steam.org");
 
 #Hwvalues = range(400);
 #pvalues = range(299);
-Jvalues = 10**np.linspace(-4, -2, 1000);
+Jvalues = np.linspace(0.0001, 0.014, 1000);
 alphaList = np.array([]);
 comp_list = np.array([]);
 dp_list = np.array([]);
@@ -75,9 +75,13 @@ for J in Jvalues:
 
     #print '    ', Sg, p
 
+plt.figure(figsize=(16, 12))
 plt.plot(Jvalues, alphaList)
 plt.plot(Jvalues, comp_list)
 plt.plot(Jvalues, dp_list)
+plt.xlabel('Injectivity $J$', fontsize=25)
+plt.tick_params(labelsize=20)
 plt.ylim(-1000,1000)
 plt.grid(True)
+plt.legend(['Nonlinear compressibility', 'Linear compressibility', 'Pressure after first iteration'],loc='lower left',fontsize=20)
 plt.show()
