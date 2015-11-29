@@ -31,8 +31,8 @@ Hw = 262.25;   # inject water enthalpy: btu/lb
 J = 0.1;      # normalized injectivity: lb/cf.psi
 steam = prop.steamProp("saturated_steam.org");
 
-pvalues = np.arange(1, 700, 2);
-Sgvalues = np.arange(0.0, 1.2, 0.01);
+pvalues = np.arange(1, 700, 10);
+Sgvalues = np.arange(0.0, 1.2, 0.1);
 Y, X = np.meshgrid(Sgvalues, pvalues);
 print Y.shape, X.shape
 alphaList = np.zeros((len(pvalues), len(Sgvalues)));
@@ -53,7 +53,8 @@ for i_Sg in range(len(Sgvalues)):
         for iter in range(1):
             Rw = (rhow*(1-Sg) + rhog*Sg) - Rw0 - J*(pi-p);
             Re = (rhow*(1-Sg)*Uw + rhog*Sg*Ug) - Re0 - J*Hw*(pi-p);
-            """
+            res_list[i_p][i_Sg] = np.sqrt(Rw**2+Re**2);
+            
             RHS = -np.array([Rw, Re]).transpose();
             a11 = rhog-rhow;
             a21 = rhog*Ug-rhow*Uw;
@@ -65,17 +66,14 @@ for i_Sg in range(len(Sgvalues)):
             alpha1 = beta - Hw;
             alpha2 = beta*Sjdrhoj - SjdrhoUj;
             alpha = alpha1/alpha2;
-            alphaList = np.append(alphaList, alpha);
-            """
-            res_list[i_p][i_Sg] = np.sqrt(Rw**2+Re**2);
+            alphaList[i_p][i_Sg] = alpha1/alpha2;
 
-            """
             a22bar = a22 - beta*a12;
             Rebar = Re - beta*Rw;
             delta_p = -Rebar/a22bar;
             comp_linear = delta_p/(J*(pi - p));
-            comp_list = np.append(comp_list, comp_linear);
-
+            comp_list[i_p][i_Sg] = comp_linear;
+            """
             A = np.array([[a11, a12], [a21, a22]]);
             #    print A
             x = np.linalg.solve(A, RHS);
@@ -93,9 +91,11 @@ for i_Sg in range(len(Sgvalues)):
 #plt.plot(pvalues, res_list)
 #plt.ylim(-300, 300)
 plt.figure(figsize=(16,16))
-matplotlib.rcParams['contour.negative_linestyle']='solid';
-res_list=np.log10(res_list/np.amax(res_list));
+#matplotlib.rcParams['contour.negative_linestyle']='solid';
+#res_list=np.log10(res_list/np.amax(res_list));
 CS=plt.contour(X,Y,res_list, [-0.1, -0.3, -0.6, -0.9, -1.2, -1.5, -2.5], colors='k')
+#CS=plt.contour(X,Y,comp_list)
+#CS=plt.contour(X,Y,alphaList,100)
 plt.clabel(CS, inline=1, fontsize=14)
 #im = plt.imshow(res_list, interpolation='bilinear', origin='lower', cmap=cm.gray)
 plt.tick_params(labelsize=18)
