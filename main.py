@@ -28,11 +28,14 @@ steam = prop.steamProp("saturated_steam.org");
 getcontext().prec = 5;
 
 Hw = 262.09;
-Jvalues = [0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007,\
+Jvalues = np.concatenate((np.linspace(0.001, 0.007, 10), np.linspace(0.007, 0.00885, 50), np.linspace(0.009, 0.02, 20)));
+"""
+           [0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007,\
            0.0072, 0.0073, 0.00732, 0.00738, 0.0074, 0.0075, 0.0077,\
            0.008, 0.0085, 0.0087, 0.00875, 0.00879, 0.00881,\
            0.00885, 0.009, 0.01, 0.02, 0.03];
-"""
+           
+
 dSg=[]
 dp=[]
 compressibility=[]
@@ -124,8 +127,7 @@ for J in Jvalues:
         Sg = Sg + x[0];
         p = p + x[1];
         [rhow, rhog, drhow, drhog, Uw, Ug, drhoUw, drhoUg] = calcProp(steam, p);
-    print '    ', Decimal(Sg).normalize(), '&',\
-          Decimal(p).normalize(), '\\\\'
+    print '    ', Decimal(Sg).normalize(), '&', Decimal(p).normalize(), '\\\\'
     p_conv.append(p); Sg_conv.append(Sg);
 
 print '\\end{tabular}\n\\end{table}'
@@ -138,25 +140,42 @@ print '\\newpage'
 #plt.plot(Jvalues, steamSaturation)
 #plt.plot(Jvalues, pressure)
 #plt.plot(Jvalues, residual)
+Jvalues = np.array(Jvalues)
+p1 = np.array(p1)
+p_conv = np.array(p_conv)
+Sg1 = np.array(Sg1)
+Sg_conv = np.array(Sg_conv)
+
 plt.figure(figsize=(10, 16))
 plt.subplot(2, 1, 1)
-plt.plot(Jvalues, p1, 'o-')
-plt.plot(Jvalues, p_conv, '^-')
-plt.plot([0, 0.03], [0, 0])
-plt.plot([0, 0.03], [500, 500], 'k')
-plt.legend(['First iteration $p$','Converged $p$','$p=0$','Initial $p=500$'], fontsize=16, loc='lower right')
+#plt.plot(Jvalues, p1, '--', linewidth=2)
+#plt.plot(Jvalues, p_conv, linewidth=2)
+plt.plot(Jvalues[p1<p0], p1[p1<p0], 'b--', linewidth=2)
+plt.plot(Jvalues[p_conv<p0], p_conv[p_conv<p0], 'g-', linewidth=2)
+plt.plot(Jvalues[p1>p0], p1[p1>p0], 'b--')
+plt.plot(Jvalues[p_conv>p0], p_conv[p_conv>p0], 'g-')
+plt.plot([0, 0.02], [0, 0], 'r:')
+plt.plot([0, 0.02], [500, 500], 'k:')
+plt.legend(['First iteration $p^{k=1}$','Converged $p$'], fontsize=16, loc='lower right')
+#plt.legend(['First iteration $p$','Converged $p$','$p=0$','Initial $p=500$'], fontsize=16, loc='lower right')
 #plt.xlabel('Injectivity $J$', fontsize=20)
-plt.ylabel('Pressure (psi)', fontsize=20)
+#plt.ylabel('Pressure (psi)', fontsize=20)
+plt.xlim((0, 0.02))
 plt.ylim((-400, 1000))
 plt.tick_params(labelsize=16)
-plt.grid(True)
+#plt.grid(True)
 plt.subplot(2, 1, 2)
-plt.plot(Jvalues, Sg1, 'o-')
-plt.plot(Jvalues, Sg_conv, '^-')
-plt.legend(['First iteration $S_g$','Converged $S_g$'], fontsize=16, loc='lower right')
-plt.xlabel('Injectivity $J$', fontsize=20)
-plt.ylabel('Steam Saturation', fontsize=20)
-plt.ylim((0.0, 1.5))
+#plt.plot(Jvalues, Sg1, '--', linewidth=2)
+#plt.plot(Jvalues, Sg_conv, linewidth=2)
+plt.plot(Jvalues[Sg1<1.0], Sg1[Sg1<1.0], 'b--', linewidth=2)
+plt.plot(Jvalues[Sg_conv<1.0], Sg_conv[Sg_conv<1.0], 'g-', linewidth=2)
+plt.plot(Jvalues[Sg1>1.0], Sg1[Sg1>1.0], 'b--')
+plt.plot(Jvalues[Sg_conv>1.0], Sg_conv[Sg_conv>1.0], 'g-')
+plt.legend(['First iteration $S_g^{k=1}$','Converged $S_g$'], fontsize=16, loc='lower right')
+#plt.xlabel('Injectivity $J$', fontsize=20)
+#plt.ylabel('Steam Saturation', fontsize=20)
+plt.xlim((0, 0.02))
+plt.ylim((0.0, 1.2))
 plt.tick_params(labelsize=16)
-plt.grid(True)
+#plt.grid(True)
 plt.show()
