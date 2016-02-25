@@ -31,8 +31,8 @@ Hw = 262.25;   # inject water enthalpy: btu/lb
 J = 0.1;      # normalized injectivity: lb/cf.psi
 steam = prop.steamProp("saturated_steam.org");
 
-pvalues = np.arange(1, 700, 10);
-Sgvalues = np.arange(0.0, 1.2, 0.1);
+pvalues = np.linspace(1, 700, 5000);
+Sgvalues = np.linspace(0.0, 1.2, 500);
 Y, X = np.meshgrid(Sgvalues, pvalues);
 print Y.shape, X.shape
 alphaList = np.zeros((len(pvalues), len(Sgvalues)));
@@ -92,14 +92,14 @@ for i_Sg in range(len(Sgvalues)):
 #plt.ylim(-300, 300)
 plt.figure(figsize=(16,16))
 #matplotlib.rcParams['contour.negative_linestyle']='solid';
-#res_list=np.log10(res_list/np.amax(res_list));
-CS=plt.contour(X,Y,res_list, [-0.1, -0.3, -0.6, -0.9, -1.2, -1.5, -2.5], colors='k')
+res_list=np.log10(res_list/np.amax(res_list));
+CS=plt.contour(X,Y,res_list)#, [-0.1, -0.3, -0.6, -0.9, -1.2, -1.5, -2.5], colors='k')
 #CS=plt.contour(X,Y,comp_list)
 #CS=plt.contour(X,Y,alphaList,100)
-plt.clabel(CS, inline=1, fontsize=14)
+plt.clabel(CS, inline=2, fontsize=20)
 #im = plt.imshow(res_list, interpolation='bilinear', origin='lower', cmap=cm.gray)
-plt.tick_params(labelsize=18)
-plt.xlabel('Pressure initial guess(psi)', fontsize=25)
-plt.ylabel('Steam saturation initial guess', fontsize=25)
+plt.tick_params(labelsize=25)
+#plt.xlabel('Pressure initial guess(psi)', fontsize=25)
+#plt.ylabel('Steam saturation initial guess', fontsize=25)
 plt.grid(True)
 plt.show()
