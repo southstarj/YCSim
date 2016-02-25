@@ -82,7 +82,7 @@ def GenerateRHS(reservoir, dt, x, x0):
         for k in _conn:
             T, TH = reservoir.Transmissibility(i, k, x);
             Dp = p[k] - p[i];
-            print 'i, k = (', i, k, '), T =', T, 'Dp =', Dp
+            #print 'i, k = (', i, k, '), T =', T, 'Dp =', Dp
             Rw[i] += -np.sum(T)*Dp;
             Re[i] += -np.sum(TH)*Dp;
 

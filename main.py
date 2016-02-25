@@ -6,26 +6,26 @@ import Reservoir
 import Fluid
 from Simulator import *
 
-n = 2;
-nv = 2;
+n = 10;
+nv = 10;
 # geological settings
 poreVol = [100.0 for i in range(n)];
-perm = [2.0 for i in range(n)];
+perm = [2.0e-10 for i in range(n)];
 deltax = 10.0;
-Area = 10.0;
+Area = 100.0;
 reservoir = Reservoir.Reservoir(n, poreVol, perm, deltax, Area);
 # initial distribution
-p0 = [500 for i in range(n)];  p0[0] = 500;
+p0 = [200 for i in range(n)];  p0[0] = 200;
 Sg0 = [1.0 for i in range(n)]; Sg0[0] = 1.0;
-qT = -7.0; pWater = 600; pInj = 600;                # water injection
+qT = -500.0; pWater = 400; pInj = 300;                # water injection
 rhoB = reservoir.getFluid().waterDensity(pInj);
 HB = reservoir.getFluid().waterEnthalpy(pWater);
 print 'Water Injection:', qT, 'ft^3/h'
-print rhoB, 'lbm/ft^3 (', pWater, 'psi)'
-print HB, 'Btu/lbm (', pInj, 'psi)\n'
+print rhoB, 'lbm/ft^3 (', pInj, 'psi)'
+print HB, 'Btu/lbm (', pWater, 'psi)\n'
 x0 = np.array(Sg0 + p0);
 x = x0;
-dt = 10.0;                           # time step
+dt = 0.01;                           # time step
 
 np.set_printoptions(precision=5);
 
@@ -36,7 +36,7 @@ AxGridblock = fig.add_subplot(411, sharex=AxSaturation)
 AxPressure = fig.add_subplot(413, sharex=AxSaturation)
 AxTemperature = fig.add_subplot(414, sharex=AxSaturation)
 
-for timestep in range(201):
+for timestep in range(21):
     print 'time step:', timestep
     # Prototype for Newton iteration
     for iter in range(100):
@@ -92,7 +92,7 @@ for timestep in range(201):
         print 'Not Converge'
         break;
     
-    if timestep%20 == 0:
+    if timestep%2 == 0:
         AxSaturation.plot(Sg, ':o')
         AxPressure.plot(p, ':o')
         AxTemperature.plot(Tb, ':o')
@@ -133,4 +133,4 @@ AxGridblock.annotate('$k, V_p$', xy=(4.5, 0.5), xycoords='data',
 """
 AxGridblock.set_xbound(0, 9)
 
-#plt.show()
+plt.show()
