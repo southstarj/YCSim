@@ -30,14 +30,14 @@ J = 0.1;      # normalized injectivity: lb/cf.psi
 steam = prop.steamProp("saturated_steam.org");
 
 Hw = 262.09;
-pvalues = range(0, 599, 11);
+pvalues = np.linspace(0, 299, 2000);
 alphaList = np.array([]);
 comp_list = np.array([]);
 dp_list = np.array([]);
 pconv_list = np.array([]);
 
 for i_p in pvalues:
-    Sg = 0.4;
+    Sg = 1.0;
     p = i_p;
     [rhow0, rhog0, drhow0, drhog0, Uw0, Ug0, drhoUw0, drhoUg0] = calcProp(steam, p0);
     Rw0 = rhow0*(1-Sg0) + rhog0*Sg0;
@@ -107,17 +107,24 @@ for i_p in pvalues:
     pconv_list = np.append(pconv_list, p);
     #print '    ', Sg, p
 
-plt.figure(figsize=(16,16))
-plt.plot(pvalues, alphaList)
-plt.plot(pvalues, comp_list)
-plt.plot(pvalues, dp_list)
-plt.plot(pvalues, pconv_list, 'k')
-plt.ylim(-400, 1000)
+plt.figure(figsize=(16,12))
+plt.subplot(211)
+plt.plot(pvalues, alphaList, linewidth=2)
+plt.plot(pvalues, comp_list, '--', linewidth = 2)
+plt.plot([0, 600], [0,0], 'k')
+plt.ylim(-200, 200)
+plt.xlim(0,300)
 plt.tick_params(labelsize=18)
-plt.xlabel('Pressure initial guess(psi)', fontsize=25)
-plt.legend(['Nonlinear compressibility', 'Linear compressibility',
-            'Pressure at the first iteration', 'Pressure after convergence'], 
-            fontsize=18, loc='lower right')
-plt.title('Injectivity $J=0.1$; Steam saturation initial guess $S_g=0.4$', fontsize=25)
-plt.grid(True)
+plt.legend(['$\\alpha$', '$\\hat{\\alpha}$'], fontsize=18, loc='lower right')
+plt.subplot(212)
+plt.plot(pvalues, dp_list, '--', linewidth=2)
+plt.plot(pvalues, pconv_list, linewidth=2)
+plt.plot([0, 600], [0,0], 'k')
+plt.ylim(-200, 800)
+plt.xlim(0,300)
+plt.tick_params(labelsize=18)
+#plt.xlabel('Pressure initial guess(psi)', fontsize=25)
+plt.legend(['$p^{k=1}$', '$p_{converge}$'], fontsize=18, loc='lower right')
+#plt.title('Injectivity $J=0.1$; Steam saturation initial guess $S_g=0.4$', fontsize=25)
+#plt.grid(True)
 plt.show()
